@@ -1,39 +1,38 @@
 #pragma once
-#include "edge.hpp"
-// #include "constants.hpp"
 #include <vector>
 #include <algorithm>
 
-class Vertex{
+class Edge;
+
+
+
+class Vertex
+{
 
 private:
-
     // ID of the vertex
-     int id;
+    size_t id;
 
     // Flag to mark the vertex as visited
     bool visited;
-    
+
     // List to store the edges connected to the vertex
     std::vector<Edge> edges;
 
-    public:
-
+public:
     // Constructor to create a vertex with a given ID
-    Vertex(int id);
+    Vertex(size_t id);
 
-    //Default constructor
+    // Default constructor
     Vertex() = default;
-        
-    
+
     // Getters and setters for vertex properties
-    int& getId();
-    const int& getId() const;
-    
-    
-    bool& getVisited() { return visited; }
-    const bool& getVisited() const { return visited; }
-  
+    size_t &getId();
+    const size_t &getId() const;
+
+    bool &getVisited() ;
+    const bool &getVisited() const ;
+
     // Add an edge to the vertex
     void addEdge(Edge e);
 
@@ -50,17 +49,30 @@ private:
     // Check if the vertex has an edge connecting to a specific target vertex
     bool hasEdge(Vertex target) const;
 
-    bool operator==(const Vertex& other) const;
+    bool operator==(const Vertex &other) const;
 
+    // struct VertexHash
+    // {
+    //     std::size_t operator()(const Vertex &v) const
+    //     {
+    //         return std::hash<int>()(v.getId());
+    //     }
+    // };
+    bool operator<(const Vertex &other) const
+    {
+        return id < other.id;
+    }
 };
 
-// Hash function for the Vertex class
-namespace std {
+namespace std
+{
     template <>
-    struct hash<Vertex> {
-        std::size_t operator()(const Vertex& v) const {
-            // Compute the hash value for the vertex ID
-            return std::hash<int>()(v.getId());
+    struct hash<Vertex>
+    {
+        std::size_t operator()(const Vertex &v) const
+        {
+            return v.getId();
         }
     };
 }
+

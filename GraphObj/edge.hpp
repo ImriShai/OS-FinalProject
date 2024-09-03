@@ -1,5 +1,7 @@
 #pragma once
+#include <functional>
 #include "vertex.hpp"
+
 
 class Edge
 {
@@ -26,34 +28,38 @@ public:
     Vertex &getEnd();
     const Vertex &getEnd() const;
 
-    int& getWeight();
-    const int& getWeight() const;
+    int &getWeight();
+    const int &getWeight() const;
 
     // Get the vertex at the other end of the edge
     Vertex &getOther(Vertex v);
     const Vertex &getOther(Vertex v) const;
 
     // Check if the edge contains a specific vertex
-    bool contains(Vertex& target) const;
+    bool contains(Vertex &target) const;
 
     // Flip the direction of the edge
     void flip();
 
-
-     // Equality operator
-    bool operator==(const Edge& other) const; 
+    // Equality operator
+    bool operator==(const Edge &other) const;
 };
 
-// Hash function for the Edge class
-namespace std {
+namespace std
+{
     template <>
-    struct hash<Edge> {
-        std::size_t operator()(const Edge& e) const {
-            // Compute individual hash values for each member and combine them using XOR and bit shifting
-            std::size_t h1 = std::hash<Vertex>()(e.getStart());
-            std::size_t h2 = std::hash<Vertex>()(e.getEnd());
-            std::size_t h3 = std::hash<int>()(e.getWeight());
+    struct hash<Edge>
+    {
+        std::size_t operator()(const Edge &e) const
+        {
+            std::size_t h1 = std::hash<Vertex>{}(e.getStart());
+            std::size_t h2 =std::hash<Vertex>{}(e.getEnd());
+            std::size_t h3 = std::hash<int>{}(e.getWeight());
             return h1 ^ (h2 << 1) ^ (h3 << 2);
         }
     };
 }
+
+
+
+
