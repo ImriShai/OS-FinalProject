@@ -25,6 +25,12 @@ void Vertex::removeEdge(Edge e)
     edges.erase(std::remove(edges.begin(), edges.end(), e), edges.end());
 }
 
+//Remove all edges from the vertex
+void Vertex::removeAllEdges()
+{
+    edges.clear();
+}
+
 // Get the degree of the vertex (number of edges)
 int Vertex::degree() const
 {
@@ -56,3 +62,14 @@ bool Vertex::operator==(const Vertex &other) const
 {
     return id == other.id;
 }
+
+Vertex &Vertex::operator=(const Vertex &other)
+    {
+        id = other.id;
+        visited = other.visited;
+        for (Edge e : other.edges)
+        {
+            edges.push_back(e);
+        }
+        return *this;
+    }

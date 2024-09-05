@@ -7,11 +7,13 @@ VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
 # Source files
 graphSrc = $(wildcard GraphObj/*.cpp)
+MSTSrc = $(wildcard MST/*.cpp)
+DATASTRUCTSrc = $(wildcard DataStruct/*.cpp)
 
 serverSrc = Server.cpp
 
 # Object files
-OBJ = $(graphSrc:.cpp=.o) $(serverSrc:.cpp=.o)
+OBJ = $(graphSrc:.cpp=.o) $(serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o)
 TARGET = server
 
 .PHONY: all server valgrind clean
@@ -34,4 +36,4 @@ server: $(OBJ)
 
 # Clean build files
 clean:
-	rm -f *.o server GraphObj/*.o
+	rm -f *.o server GraphObj/*.o MST/*.o DataStruct/*.o

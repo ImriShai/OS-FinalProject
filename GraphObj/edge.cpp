@@ -51,3 +51,17 @@ bool Edge::operator==(const Edge &other) const
 {
     return start == other.start && end == other.end && weight == other.weight;
 }
+
+ //Assignment operator
+    Edge &Edge::operator=(const Edge &other)
+    {
+        start = other.start;
+        end = other.end;
+        weight = other.weight;
+        return *this;
+    }
+
+     bool Edge::operator<(const Edge &other) const
+    {
+        return weight < other.weight;
+    }

@@ -43,6 +43,12 @@ public:
 
     // Equality operator
     bool operator==(const Edge &other) const;
+
+    //Assignment operator
+    Edge &operator=(const Edge &other);
+
+    //Less than operator
+    bool operator<(const Edge &other) const;
 };
 
 namespace std

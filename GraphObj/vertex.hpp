@@ -39,6 +39,9 @@ public:
     // Remove an edge from the vertex
     void removeEdge(Edge e);
 
+    //Remove all edges from the vertex
+    void removeAllEdges();
+
     // Get the degree of the vertex (number of edges)
     int degree() const;
 
@@ -51,13 +54,9 @@ public:
 
     bool operator==(const Vertex &other) const;
 
-    // struct VertexHash
-    // {
-    //     std::size_t operator()(const Vertex &v) const
-    //     {
-    //         return std::hash<int>()(v.getId());
-    //     }
-    // };
+    Vertex &operator=(const Vertex &other);
+
+   
     bool operator<(const Vertex &other) const
     {
         return id < other.id;

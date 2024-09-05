@@ -16,7 +16,7 @@ void Graph::DFS_visit(Vertex v, std::map<Vertex, bool> &visited) const
 Graph::Graph() : vertices(), edges() {}
 
 // Constructor to create a graph from a set of vertices that may already contain edges
-Graph::Graph(std::unordered_set<Vertex> &inputVxs) : vertices(), edges()
+Graph::Graph(std::unordered_set<Vertex> inputVxs) : vertices(), edges()
 {
     // Add vertices to the graph
     for (auto v : inputVxs)
@@ -31,6 +31,30 @@ Graph::Graph(std::unordered_set<Vertex> &inputVxs) : vertices(), edges()
         }
     }
 }
+
+// Copy constructor with option to not copy edges
+Graph::Graph(const Graph &other, bool copyEdges) : vertices(), edges()
+{
+    for (const auto &pair : other.vertices)
+    {
+        vertices[pair.first] = pair.second;
+    }
+    if (copyEdges)
+    {
+        for (const auto &e : other.edges)
+        {
+            edges.insert(e);
+        }
+    }
+    else
+    { //Remove all edges
+        for (auto &pair : vertices)
+        {
+            pair.second.removeAllEdges();
+        }       
+}
+}
+
 
 // Get the maximum degree of the graph
 size_t Graph::maxDegree() const

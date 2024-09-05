@@ -1,3 +1,4 @@
+#pragma once
 #include "vertex.hpp"
 #include "edge.hpp"
 #include <map>
@@ -21,7 +22,10 @@ public:
     Graph();
 
     // Constructor to create a graph from a set of vertices that may already contain edges
-    Graph(std::unordered_set<Vertex> &inputVxs);
+    Graph(std::unordered_set<Vertex> inputVxs);
+
+    //Copy constructor with option to not copy edges
+    Graph(const Graph &other, bool copyEdges = false);
 
     // Get the maximum degree of the graph
     size_t maxDegree() const;
@@ -45,6 +49,9 @@ public:
     void addEdge(Edge e);
     // Remove an edge from the graph
     void removeEdge(Edge e);
+ 
+    //add edge to the graph by vertices
+    void addEdge(Vertex &start, Vertex &end, int weight = 1);
 
     // Get an iterator for the vertices in the graph
     std::map<int, Vertex>::iterator begin();
