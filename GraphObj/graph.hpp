@@ -4,6 +4,8 @@
 #include <map>
 #include <unordered_set>
 #include <vector>
+#include <iostream>
+#define INF static_cast<size_t>(-1)
 
 class Graph
 {
@@ -16,6 +18,28 @@ private:
 
     // Perform DFS to visit vertices in the graph
     void DFS_visit(Vertex v, std::map<Vertex, bool> &visited) const;
+
+    // Get total weight of the graph
+    size_t totalWeight() const;
+
+    // Get the longest path in the graph
+    std::string longestPath() const;
+    // Get the longest path in the graph given the distances
+    std::string longestPath(std::vector<std::vector<size_t>> &dist) const;
+
+    // Get the Avg distance in the graph
+    double avgDistance() const;
+    double avgDistance(std::vector<std::vector<size_t>> &dist) const;
+    // Get the shortest path in the graph
+    std::string shortestPath(size_t start, size_t end) const;
+    // Get the shortest path in the graph given the distances
+    std::string shortestPath(size_t start, size_t end, std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const;
+
+    // Get the distances between vertices in the graph and the parent matrix
+    std::string allShortestPaths( std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const;
+
+    
+
 
 public:
     // Constructor to create an empty graph
@@ -63,7 +87,7 @@ public:
     bool isComplete() const;
 
     // Get the adjacency matrix of the graph
-    std::vector<std::vector<size_t>> adjacencyMatrix();
+    std::vector<std::vector<size_t>> adjacencyMatrix() const;
 
     // Check if the graph is connected
     bool isConnected() const;
@@ -71,4 +95,13 @@ public:
     // Get a vertex by its ID
     Vertex &getVertex(int id);
     const Vertex &getVertex(int id) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Graph &g);
+
+    // Get the distances between vertices in the graph and the parent matrix
+    std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> getDistances() const;
+
+
 };
+
+

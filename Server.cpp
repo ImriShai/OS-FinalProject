@@ -39,7 +39,7 @@ void initGraph(Graph *g, int m, int clientFd)
     dup2(clientFd, STDIN_FILENO);      // Redirect STDIN to the socket
     for (int i = 0; i < m; i++)
     { // Read the edges
-        int u, v, weight;
+        size_t u, v, weight;
         cin >> u >> v >> weight;
         Edge e = Edge(g->getVertex(u - 1), g->getVertex(v - 1), weight);
         g->addEdge(e);        // Add edge from u to v
@@ -85,15 +85,17 @@ pair<string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
 
     string msg = "Client " + to_string(clientFd) + " successfully created a new Graph with " + to_string(n) + " vertices and " + to_string(m) + " edges" + "\n";
     cout<< "Graph created successfully\n";
+    g->adjacencyMatrix();
     return {msg, g};
 }
 
-pair<string, Graph *> newEdge(int n, int m, int weight,  int clientFd, Graph *g)
+pair<string, Graph *> newEdge(size_t n, size_t m, size_t weight,  int clientFd, Graph *g)
 {
     cout << "Adding an edge from " << n << " to " << m << endl;
     cout << &(*g);
     g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
     string msg = "Client " + to_string(clientFd) + " added an edge from " + to_string(n) + " to " + to_string(m) + "with weight " + to_string(weight) + "\n";
+    
     return {msg, g};
 }
 
@@ -117,6 +119,7 @@ pair<string, Graph *> MST(Graph *g, int clientFd, string strat) //many to do her
 
     // Perform the operation
     Graph mst = (*MST_Factory::getInstance()->createMST(strat))(g);
+    cout << mst; // Print the MST stats
 
     // Restore the original STDOUT
     dup2(stdout_save, STDOUT_FILENO);
@@ -133,7 +136,7 @@ pair<string, Graph *> MST(Graph *g, int clientFd, string strat) //many to do her
     }
     close(pipefd[0]); // Close the read-end of the pipe
     // Use 'output' as needed
-    msg += "SCCs Output: \n" + output;
+    msg += "MSTs' stats: \n" + output;
     return {msg, nullptr};
 }
 
@@ -158,7 +161,7 @@ pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string 
     { // format: newedge n m (add an edge from n to m)
         if (g != nullptr)
         {
-            return newEdge(n, m, clientFd, w, g);
+            return newEdge(static_cast<size_t>(n), static_cast<size_t>(m), static_cast<size_t>(w), clientFd, g);
         }
         else
         {

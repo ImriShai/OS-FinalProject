@@ -10,11 +10,11 @@ private:
     Vertex start;
     Vertex end;
     // Whether the edge is weighted and the weight of the edge
-    int weight;
+    size_t weight;
 
 public:
     // Constructor to create a weighted edge
-    Edge(Vertex s, Vertex e, int w = 1);
+    Edge(Vertex s, Vertex e, size_t w = 1);
 
     // Default constructor
     Edge() = default;
@@ -28,8 +28,8 @@ public:
     Vertex &getEnd();
     const Vertex &getEnd() const;
 
-    int &getWeight();
-    const int &getWeight() const;
+    size_t &getWeight();
+    size_t getWeight() const;
 
     // Get the vertex at the other end of the edge
     Vertex &getOther(Vertex v);

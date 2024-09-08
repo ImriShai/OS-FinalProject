@@ -2,7 +2,7 @@
 #include "vertex.hpp"
 
 // Constructor to create a weighted edge
-Edge::Edge(Vertex s, Vertex e, int w ) : start(s), end(e), weight(w) {}
+Edge::Edge(Vertex s, Vertex e, size_t w ) : start(s), end(e), weight(w) {}
 
 // Copy constructor to create an edge
 Edge::Edge(const Edge &other) : start(other.start), end(other.end), weight(other.weight) {}
@@ -13,8 +13,8 @@ const Vertex &Edge::getStart() const { return start; }
 Vertex &Edge::getEnd() { return end; }
 const Vertex &Edge::getEnd() const { return end; }
 
-int &Edge::getWeight() { return weight; }
-const int &Edge::getWeight() const { return weight; }
+size_t &Edge::getWeight() { return weight; }
+size_t Edge::getWeight() const { return weight; }
 
 // Get the vertex at the other end of the edge
 Vertex &Edge::getOther(Vertex v)
