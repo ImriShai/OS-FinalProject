@@ -19,9 +19,19 @@
 #include "GraphObj/graph.hpp"
 #include "MST/MST_Strategy.hpp"
 #include "MST/MST_Factory.hpp"
+#include "LFP.hpp"
+#include <mutex>
 
+
+#define NUM_THREADS 4 // Number of threads in LFP
 #define PORT "9036" // Port we're listening on
+
 using namespace std;
+
+// Mutex for the graph
+mutex graphMutex;
+
+
 // Function to convert a string to lowercase
 string toLowerCase(string s)
 {
@@ -31,6 +41,7 @@ string toLowerCase(string s)
 
 void initGraph(Graph *g, int m, int clientFd)
 {
+    cout << "m: " << m << endl;
     string msg = "To create an edge u->v with weight w please enter the edge number in the format: u v w \n";
     if(send(clientFd, msg.c_str(), msg.size(), 0)<0){
         perror("send");
@@ -42,7 +53,7 @@ void initGraph(Graph *g, int m, int clientFd)
         size_t u, v, weight;
         cin >> u >> v >> weight;
         Edge e = Edge(g->getVertex(u - 1), g->getVertex(v - 1), weight);
-        g->addEdge(e);        // Add edge from u to v
+        g->addEdge(e); // Add edge from u to v
     }
     dup2(stdin_save, STDIN_FILENO); // Restore the original STDIN
 }
@@ -61,6 +72,46 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
     return result;
 }
 
+void parseInput(char* buf, int nbytes, int &n, int &m, int &weight, string &strat,string& action, string& actualAction, const vector<string>& graphActions, const vector<string>& mstStrats)
+{
+    buf[nbytes] = '\0';
+    action = toLowerCase(string(buf));
+    vector<string> tokens = splitStringBySpaces(action);
+    if (tokens.size() > 0) {
+        actualAction = tokens[0];
+    } else {
+        actualAction = "emptyMessage";
+    }
+    if (find(graphActions.begin(), graphActions.end(), actualAction) == graphActions.end()) {
+        actualAction = "message";
+    } else if (actualAction == "mst") {
+        if (tokens.size() > 1) {
+            if (find(mstStrats.begin(), mstStrats.end(), tokens[1]) == mstStrats.end()) {
+                actualAction = "message";
+            } else {
+                actualAction = "mst";
+                action = tokens[0];
+                n = -1;
+                m = -1;
+                weight = -1;
+                strat = tokens[1];
+            }
+        }
+    } else if (actualAction == "newgraph") {
+        n = stoi(tokens[1]);
+        m = stoi(tokens[2]);
+        weight = -1;
+    } else if (actualAction == "newedge") {
+        n = stoi(tokens[1]);
+        m = stoi(tokens[2]);
+        weight = stoi(tokens[3]);
+    } else {
+        n = stoi(tokens[1]);
+        m = stoi(tokens[2]);
+        weight = -1;
+    }
+}
+
 
 unordered_set<Vertex> initVertices(int n)
 {
@@ -73,7 +124,8 @@ unordered_set<Vertex> initVertices(int n)
 }
 
 pair<string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
-{
+{   
+    unique_lock<std::mutex> lock(graphMutex); // locking the mutex:
     cout << "Creating a new graph with " << n << " vertices and " << m << " edges" << endl;
 
     if (g != nullptr)
@@ -85,32 +137,35 @@ pair<string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
 
     string msg = "Client " + to_string(clientFd) + " successfully created a new Graph with " + to_string(n) + " vertices and " + to_string(m) + " edges" + "\n";
     cout<< "Graph created successfully\n";
-    g->adjacencyMatrix();
     return {msg, g};
 }
 
 pair<string, Graph *> newEdge(size_t n, size_t m, size_t weight,  int clientFd, Graph *g)
 {
+    //Locking the graph
+    unique_lock<std::mutex> lock(graphMutex); 
     cout << "Adding an edge from " << n << " to " << m << endl;
-    cout << &(*g);
+    // cout << &(*g);
     g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
-    string msg = "Client " + to_string(clientFd) + " added an edge from " + to_string(n) + " to " + to_string(m) + "with weight " + to_string(weight) + "\n";
+    string msg = "Client " + to_string(clientFd) + " added an edge from " + to_string(n) + " to " + to_string(m) + " with weight " + to_string(weight) + "\n";
     
     return {msg, g};
 }
 
 pair<string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
 {
+    //Locking the graph
+    unique_lock<std::mutex> lock(graphMutex);
     cout << "Removing an edge from " << n << " to " << m << endl;
-    g->removeEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1))); // Remove edge from u to v
+    g->removeEdge(Edge{g->getVertex(n - 1), g->getVertex(m - 1)}); // Remove edge from u to v
     string msg = "Client " + to_string(clientFd) + " removed an edge from " + to_string(n) + " to " + to_string(m) + "\n";
     return {msg, g};
 }
 
 pair<string, Graph *> MST(Graph *g, int clientFd, string strat) //many to do here
 {
-
-    string msg = "Client " + to_string(clientFd) + " requested to print all strongly connected components" + "\n";  // SCC ?! 
+    unique_lock<std::mutex> lock(graphMutex);  //   Locking the graph
+    string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
     int stdout_save = dup(STDOUT_FILENO); // Save the current state of STDOUT
     int pipefd[2];
     pipe(pipefd);                   // Create a pipe
@@ -188,7 +243,6 @@ pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string 
         }
         else
         {
-           
             return MST(g, clientFd, strat);
         }
     }
@@ -296,6 +350,9 @@ void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
 // Main
 int main(void)
 {
+    LFP lfp(NUM_THREADS);  // Create an instance of LFP
+    lfp.start();  // Start the threads in LFP
+
     Graph *g = nullptr;
     int listener; // Listening socket descriptor
     pair<string, Graph *> ret;
@@ -303,13 +360,14 @@ int main(void)
     string actualAction;
     int m, n, weight;
     string strat;
+    map<int, bool> connections_in_use;
 
     int newfd;                          // Newly accept()ed socket descriptor
     struct sockaddr_storage remoteaddr; // Client address
     socklen_t addrlen;
     string msg; // Buffer for server result to send
-    vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
-    vector<string> mstStrats = {"prim", "kruskal"};
+    const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
+    const vector<string> mstStrats = {"prim", "kruskal"};
 
     char buf[256]; // Buffer for client data
 
@@ -330,6 +388,7 @@ int main(void)
         exit(1);
     }
 
+    cout << "pollserver: waiting for connections..." << endl;
     // Add the listener to set
     pfds[0].fd = listener;
     pfds[0].events = POLLIN; // Report ready to read on incoming connection
@@ -348,29 +407,21 @@ int main(void)
         }
 
         // Run through the existing connections looking for data to read
-        for (int i = 0; i < fd_count; i++)
-        {
+        for (int i = 0; i < fd_count; i++){
 
             // Check if someone's ready to read
-            if (pfds[i].revents & POLLIN)
-            { // We got one!!
+            if (pfds[i].revents & POLLIN){ // We got one!!
 
-                if (pfds[i].fd == listener)
-                {
-                    // If listener is ready to read, handle new connection
+                if (pfds[i].fd == listener){  // If listener is ready to read, handle new connection
 
                     addrlen = sizeof remoteaddr;
-                    newfd = accept(listener,
-                                   (struct sockaddr *)&remoteaddr,
-                                   &addrlen);
+                    newfd = accept(listener, (struct sockaddr *)&remoteaddr, &addrlen);
 
-                    if (newfd == -1)
-                    {
+                    if (newfd == -1){
                         perror("accept");
-                    }
-                    else
-                    {
+                    } else { 
                         add_to_pfds(&pfds, newfd, &fd_count, &fd_size);
+                        connections_in_use[newfd] = false;   // Add the new connection to the set of connections
 
                         printf("pollserver: new connection from %s on "
                                "socket %d\n",
@@ -378,125 +429,57 @@ int main(void)
                                          getInAddr((struct sockaddr *)&remoteaddr),
                                          remoteIP, INET6_ADDRSTRLEN),
                                newfd);
-                        if (send(newfd, "Welcome to the server!\n", 24, 0) < 0)
-                        {
+                        if (send(newfd, "Welcome to the server!\n", 24, 0) < 0){
                             perror("send");
                         }
                     }
-                }
-                else
-                {
-                    // If not the listener, we're just a regular client
-                    int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);
+                } else {  // handle existing connection
 
+                    if (connections_in_use[pfds[i].fd]){  // If the connection is in use, skip it
+                        continue;
+                    }
+                    connections_in_use[pfds[i].fd] = true;  // Mark the connection as in use
+                    int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);  // receiving the msg from the client
                     int sender_fd = pfds[i].fd;
 
-                    if (nbytes <= 0)
-                    {
-                        // Got error or connection closed by client
-                        if (nbytes == 0)
-                        {
-                            // Connection closed
-                            printf("pollserver: socket %d hung up\n", sender_fd);
-                        }
-                        else
-                        {
-                            perror("recv");
-                        }
+                    if (nbytes <= 0) {  // Got error or connection closed by client
 
-                        close(pfds[i].fd); // Bye!
+                        if (nbytes == 0) printf("pollserver: socket %d hung up\n", sender_fd);
+                        else perror("recv");
 
+                        close(pfds[i].fd);
                         del_from_pfds(pfds, i, &fd_count);
+                        connections_in_use.erase(pfds[i].fd);
+
+                    } else {
+                        parseInput(buf, nbytes, n, m, weight, strat, action, actualAction, graphActions, mstStrats);
                     }
-                    else
-                    {
-                        // We got some good data from a client
-                        
-                        buf[nbytes] = '\0';
-                        action = toLowerCase(string(buf));
-                        vector<string> tokens = splitStringBySpaces(action);
-                        if (tokens.size() > 0)
-                        {
-                            actualAction = tokens[0];
+                    
+                    // Add task to LFP. NOTE which arguments we are passing by reference
+                    lfp.addTask([&g, action, sender_fd, actualAction, n, m, weight, strat, &pfds, &fd_count, &listener, &connections_in_use]() {
+                        cout << "Action received: " << actualAction << endl;
+                        pair<string, Graph *> result = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
+                        string msg = result.first;
+                        if (result.second != nullptr) {
+                            g = result.second;
                         }
-                        else
-                        {
-                            actualAction = "emptyMessage";
-                        }
-                        if (find(graphActions.begin(), graphActions.end(), actualAction) == graphActions.end())
-                        {
-                            actualAction = "message";
-                        }
-                        else if (actualAction == "mst"){
-                            if(tokens.size() > 1){
-                                if(find(mstStrats.begin(), mstStrats.end(), tokens[1]) == mstStrats.end()){
-                                    actualAction = "message";
-                                }
-                                else{
-                                    actualAction = "mst";
-                                    action = tokens[0];
-                                    n = -1;
-                                    m = -1;
-                                    weight = -1;
-                                    strat = tokens[1];
+                        char *msg_buf = new char[msg.length() + 1];
+                        strcpy(msg_buf, msg.c_str());
+                        int nbytes = msg.length();
+                        for (int j = 0; j < fd_count; j++) {
+                            int dest_fd = pfds[j].fd;
+                            if (dest_fd != listener && (dest_fd != sender_fd || actualAction != "message")) {
+                                if (send(dest_fd, msg_buf, (size_t)nbytes, 0) == -1) {
+                                    perror("send");
                                 }
                             }
                         }
-                        else if (actualAction == "newgraph")
-                        {
-                            
-                            n = stoi(tokens[1]);
-                            m = stoi(tokens[2]);
-                            weight = -1;
-                        }
-                        else if (actualAction == "newedge")
-                         {
-                            n = stoi(tokens[1]);
-                            m = stoi(tokens[2]);
-                            weight = stoi(tokens[3]);
-                        }
-                        else // removeedge
-                        {
-                            n = stoi(tokens[1]);
-                            m = stoi(tokens[2]);
-                            weight = -1;
-                        }
-                       
-
-                        cout  <<"User"<< to_string(sender_fd)<< " made an Action: " << actualAction << endl;
-
-                        ret = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
-                        msg = ret.first;
-                        if (ret.second != nullptr)
-                        {
-                            g = ret.second;
-                        }
-                    }
-                    char *msg_buf = new char[msg.length() + 1];
-                    nbytes = msg.length();
-                    strcpy(msg_buf, msg.c_str());
-                    // Send to everyone!
-
-                    for (int j = 0; j < fd_count; j++)
-                    {
-                        // Send to everyone!
-                        int dest_fd = pfds[j].fd;
-
-                        // Except the listener and ourselves
-                        if (dest_fd != listener)
-                        {
-                            if (dest_fd == sender_fd && actualAction == "message") // if we send a message to ourselves, we don't want to send it
-                            {
-                                continue;
-                            }
-                            else if (send(dest_fd, msg_buf, (size_t)nbytes, 0) == -1)
-                            {
-                                perror("send");
-                            }
-                        }
-                    }
-                    delete[] msg_buf;
+                        delete[] msg_buf;
+                        connections_in_use[sender_fd] = false;  // Mark the connection as free so the next event can be processed by main thread
+                        cout << "Connection " << sender_fd << " is now free" << endl;
+                    });
                     msg = "";
+                   
                 }
             } // END handle data from client
         } // END got ready-to-read from poll()

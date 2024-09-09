@@ -11,15 +11,15 @@ MSTSrc = $(wildcard MST/*.cpp)
 DATASTRUCTSrc = $(wildcard DataStruct/*.cpp)
 
 serverSrc = Server.cpp
+lf-serverSrc = LF-Server.cpp LFP.cpp
 
 # Object files
 OBJ = $(graphSrc:.cpp=.o) $(serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o)
+LF-OBJ = $(graphSrc:.cpp=.o) $(lf-serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o)
 TARGET = server
 
 .PHONY: all server valgrind clean
 all: server 
-
-
 
 # Memory check using valgrind
 valgrind: server 
@@ -29,6 +29,8 @@ valgrind: server
 server: $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
 
+lf-server: $(LF-OBJ)
+	$(CC) $(CFLAGS) $(LF-OBJ)  -o lf-server
 
 # Compile source files
 %.o: %.cpp
@@ -36,4 +38,4 @@ server: $(OBJ)
 
 # Clean build files
 clean:
-	rm -f *.o server GraphObj/*.o MST/*.o DataStruct/*.o
+	rm -f *.o server GraphObj/*.o MST/*.o DataStruct/*.o lf-server

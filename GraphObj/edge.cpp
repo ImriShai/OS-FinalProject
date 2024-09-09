@@ -49,7 +49,7 @@ void Edge::flip()
 // Equality operator
 bool Edge::operator==(const Edge &other) const
 {
-    return start == other.start && end == other.end && weight == other.weight;
+    return start == other.start && end == other.end;
 }
 
  //Assignment operator

@@ -60,8 +60,7 @@ namespace std
         {
             std::size_t h1 = std::hash<Vertex>{}(e.getStart());
             std::size_t h2 =std::hash<Vertex>{}(e.getEnd());
-            std::size_t h3 = std::hash<int>{}(e.getWeight());
-            return h1 ^ (h2 << 1) ^ (h3 << 2);
+            return h1 ^ (h2 << 1);
         }
     };
 }
