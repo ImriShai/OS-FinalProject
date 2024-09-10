@@ -1,50 +1,32 @@
 #include "graph.hpp"
 
-// Perform DFS to visit vertices in the graph
-void Graph::DFS_visit(Vertex& v, std::map<Vertex, bool> &visited) const
-{
-    visited[v] = true;
-    std::cout << "Visited vertex " << v.getId() << std::endl;
-    for (Edge& e : v)
-    {
-        Vertex u = e.getOther(v);
-        if (!visited[u])
-            DFS_visit(u, visited);
-            
-    }
-}
+
 
 // Check if the graph is connected
 bool Graph::isConnected() const
-{
-    // Perform DFS to visit vertices in the graph
-    Vertex start = vertices.begin()->second;
-    std::map<Vertex, bool> visited;
-    
-    for (const auto &pair : vertices) // Initialize all vertices as not visited
+{ //use bfs for connected
+    size_t n = numVertices();
+    std::vector<std::vector<size_t>> adjMat = adjacencyMatrix();
+    std::vector<bool> visited(n, false);
+    std::queue<size_t> q;
+    q.push(0);
+    visited[0] = true;
+    size_t count = 1;
+    while (!q.empty())
     {
-        visited[pair.second] = false;
+        size_t current = q.front();
+        q.pop();
+        for (size_t i = 0; i < n; i++)
+        {
+            if (adjMat[current][i] != INF && !visited[i])
+            {
+                visited[i] = true;
+                q.push(i);
+                count++;
+            }
+        }
     }
-    //print the map
-    for (const auto &pair : visited)
-    {
-        std::cout << pair.first.getId() << " " << pair.second << std::endl;
-    }
-
-    //prints all edges
-    for(auto Edge : edges){
-        std::cout << Edge.getStart().getId() << " " << Edge.getEnd().getId() << " " << Edge.getWeight() << std::endl;
-    }
-
-    
-    DFS_visit(start, visited);
-    // Check if all vertices were visited
-    for (const auto &pair : visited)
-    {
-        if (!pair.second)
-            return false;
-    }
-    return true;
+    return count == n;
 }
 
 // Constructor to create an empty graph
@@ -411,4 +393,17 @@ std::ostream &operator<<(std::ostream &os, const Graph &g)
     os << "The average distance between vertices is: " << g.avgDistance(dist) << "\n";
     os << "The shortest paths are: \n" << g.allShortestPaths(dist,parents) << "\n";
     return os;
+}
+
+std::string Graph::stats() const
+{
+    std::vector<std::vector<size_t>> dist, parents;
+    // Get the distances between vertices in the graph and the parent matrix
+    std::tie(dist, parents) = getDistances();
+    std::string stats = "Graph with " + std::to_string(numVertices()) + " vertices and " + std::to_string(edges.size()) + " edges\n";
+    stats += "Total weight of edges: " + std::to_string(totalWeight()) + "\n";
+    stats += longestPath(dist) + "\n";
+    stats += "The average distance between vertices is: " + std::to_string(avgDistance(dist)) + "\n";
+    stats += "The shortest paths are: \n" + allShortestPaths(dist, parents) + "\n";
+    return stats;
 }

@@ -19,7 +19,7 @@ LF-OBJ = $(graphSrc:.cpp=.o) $(lf-serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTR
 TARGET = server
 
 .PHONY: all server valgrind clean
-all: server 
+all: lf-server 
 
 # Memory check using valgrind
 valgrind: server 

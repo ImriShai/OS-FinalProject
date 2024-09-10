@@ -28,6 +28,10 @@
 
 using namespace std;
 
+// void* designP = nullptr;
+LFP lfp(NUM_THREADS); // Create an instance of LFP
+// bool designPattern = false;  // Leader-Folower == false, Pipeline == true
+
 // Mutex for the graph
 mutex graphMutex;
 
@@ -177,35 +181,18 @@ pair<string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
 
 pair<string, Graph *> MST(Graph *g, int clientFd, string strat) // many to do here
 {
-    unique_lock<std::mutex> lock(graphMutex); //   Locking the graph
-    string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
-    int stdout_save = dup(STDOUT_FILENO); // Save the current state of STDOUT
-    int pipefd[2];
-    pipe(pipefd);                   // Create a pipe
-    dup2(pipefd[1], STDOUT_FILENO); // Redirect STDOUT to the pipe
-    close(pipefd[1]);               // Close the write-end of the pipe as it's now duplicated
-
-    // Perform the operation
-    Graph mst = (*MST_Factory::getInstance()->createMST(strat))(g);
-    cout << mst; // Print the MST stats
-
-    // Restore the original STDOUT
-    dup2(stdout_save, STDOUT_FILENO);
-    close(stdout_save); // Close the saved STDOUT
-
-    // Read from the pipe
-    std::string output;
-    char buffer[128];
-    ssize_t bytes_read;
-    while ((bytes_read = read(pipefd[0], buffer, sizeof(buffer) - 1)) > 0)
-    {
-        buffer[bytes_read] = '\0'; // Null-terminate the string
-        output += buffer;
-    }
-    close(pipefd[0]); // Close the read-end of the pipe
-    // Use 'output' as needed
-    msg += "MSTs' stats: \n" + output;
-    return {msg, nullptr};
+    // unique_lock<std::mutex> lock(graphMutex); //   Locking the graph
+    
+    // implementing Leader-Follower with global variable "lfp":
+    lfp.addTask([clientFd, strat, g]() {
+        // Perform the operation
+        string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
+        msg+= "MST Strategy: " + strat + "\n";
+        Graph mst = (*MST_Factory::getInstance()->createMST(strat))(g);
+        msg += "MSTs' stats: \n" + mst.stats();
+        send(clientFd, msg.c_str(), msg.size(), 0);
+    });
+    return {"", nullptr};
 }
 
 pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string actualAction, int n, int m, int w, string strat)
@@ -262,6 +249,7 @@ pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string 
         {
             return MST(g, clientFd, strat);
         }
+       
     }
     else
     {
@@ -367,7 +355,6 @@ void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
 // Main
 int main(void)
 {
-    LFP lfp(NUM_THREADS); // Create an instance of LFP
     lfp.start();          // Start the threads in LFP
 
     Graph *g = nullptr;
@@ -494,29 +481,29 @@ int main(void)
                         parseInput(buf, nbytes, n, m, weight, strat, action, actualAction, graphActions, mstStrats);
                     }
 
-                    // Add task to LFP. NOTE which arguments we are passing by reference
-                    lfp.addTask([&g, action, sender_fd, actualAction, n, m, weight, strat, &pfds, &fd_count, &listener, &connections_in_use]()
-                                {
-                        cout << "Action received: " << actualAction << endl;
-                        pair<string, Graph *> result = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
-                        string msg = result.first;
-                        if (result.second != nullptr) {
-                            g = result.second;
-                        }
-                        char *msg_buf = new char[msg.length() + 1];
-                        strcpy(msg_buf, msg.c_str());
-                        int nbytes = msg.length();
-                        for (int j = 0; j < fd_count; j++) {
-                            int dest_fd = pfds[j].fd;
-                            if (dest_fd != listener && (dest_fd != sender_fd || actualAction != "message")) {
-                                if (send(dest_fd, msg_buf, (size_t)nbytes, 0) == -1) {
-                                    perror("send");
-                                }
+                    cout << "Action received: " << actualAction << endl;
+                    pair<string, Graph *> result = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
+                    string msg = result.first;
+                    if (result.second != nullptr) {
+                        g = result.second;
+                    }
+                    char *msg_buf = new char[msg.length() + 1];
+                    strcpy(msg_buf, msg.c_str());
+                    nbytes = msg.length();
+                    for (int j = 0; j < fd_count; j++) {
+                        int dest_fd = pfds[j].fd;
+                        if (dest_fd != listener && (dest_fd != sender_fd || actualAction != "message")) {
+                            if(msg.size() == 0) {
+                                continue;
+                            }
+                            if (send(dest_fd, msg_buf, (size_t)nbytes, 0) == -1) {
+                                perror("send");
                             }
                         }
-                        delete[] msg_buf;
-                        connections_in_use[sender_fd] = false;  // Mark the connection as free so the next event can be processed by main thread
-                        cout << "Connection " << sender_fd << " is now free" << endl; });
+                    }
+                    delete[] msg_buf;
+                    connections_in_use[sender_fd] = false;  // Mark the connection as free so the next event can be processed by main thread
+                    cout << "Connection " << sender_fd << " is now free" << endl;
                     msg = "";
                 }
             } // END handle data from client

@@ -7,7 +7,7 @@
 class MST_Factory
 {
     private:
-    MST_Factory();
+    MST_Factory() = default;
     ~MST_Factory() = default;
     static MST_Factory* instance;
     MST_Factory(const MST_Factory&) = delete;

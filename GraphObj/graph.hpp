@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <vector>
 #include <iostream>
+#include <queue>
 #define INF static_cast<size_t>(-1)
 
 class Graph
@@ -16,10 +17,8 @@ private:
     // Set to store edges in the graph
     std::unordered_set<Edge, std::hash<Edge>> edges;
 
-   //DFS visit function
-    void DFS_visit(Vertex& v, std::map<Vertex, bool> &visited) const;
+   
 
-    
 
     // Get total weight of the graph
     size_t totalWeight() const;
@@ -102,6 +101,9 @@ public:
 
     // Get the distances between vertices in the graph and the parent matrix
     std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> getDistances() const;
+
+    std::string stats() const;
+
 
 
 };

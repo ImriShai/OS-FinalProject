@@ -6,9 +6,6 @@ MST_Factory *MST_Factory::instance = nullptr;
 
 std::map<std::string, MST_Strategy *> MST_Factory::strats = {{"Prim", nullptr}, {"Kruskal", nullptr}};
 
-MST_Factory::MST_Factory()
-{
-}
 
 MST_Factory *MST_Factory::getInstance()
 {
