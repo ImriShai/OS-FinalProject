@@ -33,19 +33,6 @@ bool Edge::contains(Vertex &target) const
     return start == target || end == target;
 }
 
-// Flip the direction of the edge
-void Edge::flip()
-{
-    // Remove the edge from the start vertex's edge list and add it to the end vertex's edge list
-    start.removeEdge(*this);
-    end.addEdge(*this);
-
-    // Swap the start and end vertices
-    auto temp = start;
-    start = end;
-    end = temp;
-}
-
 // Equality operator
 bool Edge::operator==(const Edge &other) const
 {

@@ -16,8 +16,10 @@ private:
     // Set to store edges in the graph
     std::unordered_set<Edge, std::hash<Edge>> edges;
 
-    // Perform DFS to visit vertices in the graph
-    void DFS_visit(Vertex v, std::map<Vertex, bool> &visited) const;
+   //DFS visit function
+    void DFS_visit(Vertex& v, std::map<Vertex, bool> &visited) const;
+
+    
 
     // Get total weight of the graph
     size_t totalWeight() const;
@@ -75,7 +77,7 @@ public:
     void removeEdge(Edge e);
  
     //add edge to the graph by vertices
-    void addEdge(Vertex &start, Vertex &end, int weight = 1);
+    void addEdge(Vertex &start, Vertex &end, size_t weight = 1);
 
     // Get an iterator for the vertices in the graph
     std::map<int, Vertex>::iterator begin();

@@ -22,15 +22,14 @@
 #include "LFP.hpp"
 #include <mutex>
 
-
 #define NUM_THREADS 4 // Number of threads in LFP
-#define PORT "9036" // Port we're listening on
+#define PORT "9036"   // Port we're listening on
+#define WELCOME_MSG_SIZE 480
 
 using namespace std;
 
 // Mutex for the graph
 mutex graphMutex;
-
 
 // Function to convert a string to lowercase
 string toLowerCase(string s)
@@ -41,13 +40,13 @@ string toLowerCase(string s)
 
 void initGraph(Graph *g, int m, int clientFd)
 {
-    cout << "m: " << m << endl;
     string msg = "To create an edge u->v with weight w please enter the edge number in the format: u v w \n";
-    if(send(clientFd, msg.c_str(), msg.size(), 0)<0){
+    if (send(clientFd, msg.c_str(), msg.size(), 0) < 0)
+    {
         perror("send");
     }
     int stdin_save = dup(STDIN_FILENO); // Save the current state of STDIN
-    dup2(clientFd, STDIN_FILENO);      // Redirect STDIN to the socket
+    dup2(clientFd, STDIN_FILENO);       // Redirect STDIN to the socket
     for (int i = 0; i < m; i++)
     { // Read the edges
         size_t u, v, weight;
@@ -72,23 +71,33 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
     return result;
 }
 
-void parseInput(char* buf, int nbytes, int &n, int &m, int &weight, string &strat,string& action, string& actualAction, const vector<string>& graphActions, const vector<string>& mstStrats)
+void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, string &strat, string &action, string &actualAction, const vector<string> &graphActions, const vector<string> &mstStrats)
 {
     buf[nbytes] = '\0';
     action = toLowerCase(string(buf));
     vector<string> tokens = splitStringBySpaces(action);
-    if (tokens.size() > 0) {
+    if (tokens.size() > 0)
+    {
         actualAction = tokens[0];
-    } else {
+    }
+    else
+    {
         actualAction = "emptyMessage";
     }
-    if (find(graphActions.begin(), graphActions.end(), actualAction) == graphActions.end()) {
+    if (find(graphActions.begin(), graphActions.end(), actualAction) == graphActions.end())
+    {
         actualAction = "message";
-    } else if (actualAction == "mst") {
-        if (tokens.size() > 1) {
-            if (find(mstStrats.begin(), mstStrats.end(), tokens[1]) == mstStrats.end()) {
+    }
+    else if (actualAction == "mst")
+    {
+        if (tokens.size() > 1)
+        {
+            if (find(mstStrats.begin(), mstStrats.end(), tokens[1]) == mstStrats.end())
+            {
                 actualAction = "message";
-            } else {
+            }
+            else
+            {
                 actualAction = "mst";
                 action = tokens[0];
                 n = -1;
@@ -97,21 +106,26 @@ void parseInput(char* buf, int nbytes, int &n, int &m, int &weight, string &stra
                 strat = tokens[1];
             }
         }
-    } else if (actualAction == "newgraph") {
+    }
+    else if (actualAction == "newgraph")
+    {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);
         weight = -1;
-    } else if (actualAction == "newedge") {
+    }
+    else if (actualAction == "newedge")
+    {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);
         weight = stoi(tokens[3]);
-    } else {
+    }
+    else
+    {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);
         weight = -1;
     }
 }
-
 
 unordered_set<Vertex> initVertices(int n)
 {
@@ -124,37 +138,36 @@ unordered_set<Vertex> initVertices(int n)
 }
 
 pair<string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
-{   
+{
     unique_lock<std::mutex> lock(graphMutex); // locking the mutex:
     cout << "Creating a new graph with " << n << " vertices and " << m << " edges" << endl;
 
     if (g != nullptr)
         delete g;
-    unordered_set<Vertex> vertices = initVertices(n);           // Initialize the vertices
-    
-    g = new Graph(vertices);    // Create a new graph of n vertices
+    unordered_set<Vertex> vertices = initVertices(n); // Initialize the vertices
+
+    g = new Graph(vertices);   // Create a new graph of n vertices
     initGraph(g, m, clientFd); // Initialize the graph with m edges
 
     string msg = "Client " + to_string(clientFd) + " successfully created a new Graph with " + to_string(n) + " vertices and " + to_string(m) + " edges" + "\n";
-    cout<< "Graph created successfully\n";
+    cout << "Graph created successfully\n";
     return {msg, g};
 }
 
-pair<string, Graph *> newEdge(size_t n, size_t m, size_t weight,  int clientFd, Graph *g)
+pair<string, Graph *> newEdge(size_t n, size_t m, size_t weight, int clientFd, Graph *g)
 {
-    //Locking the graph
-    unique_lock<std::mutex> lock(graphMutex); 
+    // Locking the graph
+    unique_lock<std::mutex> lock(graphMutex);
     cout << "Adding an edge from " << n << " to " << m << endl;
-    // cout << &(*g);
     g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
     string msg = "Client " + to_string(clientFd) + " added an edge from " + to_string(n) + " to " + to_string(m) + " with weight " + to_string(weight) + "\n";
-    
+
     return {msg, g};
 }
 
 pair<string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
 {
-    //Locking the graph
+    // Locking the graph
     unique_lock<std::mutex> lock(graphMutex);
     cout << "Removing an edge from " << n << " to " << m << endl;
     g->removeEdge(Edge{g->getVertex(n - 1), g->getVertex(m - 1)}); // Remove edge from u to v
@@ -162,9 +175,9 @@ pair<string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
     return {msg, g};
 }
 
-pair<string, Graph *> MST(Graph *g, int clientFd, string strat) //many to do here
+pair<string, Graph *> MST(Graph *g, int clientFd, string strat) // many to do here
 {
-    unique_lock<std::mutex> lock(graphMutex);  //   Locking the graph
+    unique_lock<std::mutex> lock(graphMutex); //   Locking the graph
     string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
     int stdout_save = dup(STDOUT_FILENO); // Save the current state of STDOUT
     int pipefd[2];
@@ -204,7 +217,6 @@ pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string 
         msg = "User " + to_string(clientFd) + " sent an empty message\n";
         return {msg, nullptr};
     }
-    
 
     if (actualAction == "newgraph")
     { // format: newgraph n m
@@ -239,6 +251,11 @@ pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string 
         if (g == nullptr)
         {
             msg = "Client " + to_string(clientFd) + " tried to perform the operation but there is no graph\n";
+            return {msg, nullptr};
+        }
+        else if(!g->isConnected())
+        {
+            msg = "Client " + to_string(clientFd) + " tried to perform the operation but the graph is not connected therefore it doesn't have a MST\n";
             return {msg, nullptr};
         }
         else
@@ -350,8 +367,8 @@ void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
 // Main
 int main(void)
 {
-    LFP lfp(NUM_THREADS);  // Create an instance of LFP
-    lfp.start();  // Start the threads in LFP
+    LFP lfp(NUM_THREADS); // Create an instance of LFP
+    lfp.start();          // Start the threads in LFP
 
     Graph *g = nullptr;
     int listener; // Listening socket descriptor
@@ -361,6 +378,14 @@ int main(void)
     int m, n, weight;
     string strat;
     map<int, bool> connections_in_use;
+    char welcomeMsg[WELCOME_MSG_SIZE] = 
+        "Welcome to the server!\n"
+        "This server can perform the following actions:\n"
+        "1. Create a new graph: newgraph n m where \"n\" is the number of vertices and \"m\" is the number of edges.\n"
+        "2. Add an edge to the graph: newedge n m w where \"n\" and \"m\" are the vertices and \"w\" is the weight of the edge.\n"
+        "3. Remove an edge from the graph: removeedge n m where \"n\" and \"m\" are the vertices.\n"
+        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim' or 'kruskal'\n";
+       
 
     int newfd;                          // Newly accept()ed socket descriptor
     struct sockaddr_storage remoteaddr; // Client address
@@ -407,21 +432,27 @@ int main(void)
         }
 
         // Run through the existing connections looking for data to read
-        for (int i = 0; i < fd_count; i++){
+        for (int i = 0; i < fd_count; i++)
+        {
 
             // Check if someone's ready to read
-            if (pfds[i].revents & POLLIN){ // We got one!!
+            if (pfds[i].revents & POLLIN)
+            { // We got one!!
 
-                if (pfds[i].fd == listener){  // If listener is ready to read, handle new connection
+                if (pfds[i].fd == listener)
+                { // If listener is ready to read, handle new connection
 
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener, (struct sockaddr *)&remoteaddr, &addrlen);
 
-                    if (newfd == -1){
+                    if (newfd == -1)
+                    {
                         perror("accept");
-                    } else { 
+                    }
+                    else
+                    {
                         add_to_pfds(&pfds, newfd, &fd_count, &fd_size);
-                        connections_in_use[newfd] = false;   // Add the new connection to the set of connections
+                        connections_in_use[newfd] = false; // Add the new connection to the set of connections
 
                         printf("pollserver: new connection from %s on "
                                "socket %d\n",
@@ -429,34 +460,43 @@ int main(void)
                                          getInAddr((struct sockaddr *)&remoteaddr),
                                          remoteIP, INET6_ADDRSTRLEN),
                                newfd);
-                        if (send(newfd, "Welcome to the server!\n", 24, 0) < 0){
+                        if (send(newfd, welcomeMsg, sizeof(welcomeMsg), 0) < 0)
+                        {
                             perror("send");
                         }
                     }
-                } else {  // handle existing connection
+                }
+                else
+                { // handle existing connection
 
-                    if (connections_in_use[pfds[i].fd]){  // If the connection is in use, skip it
+                    if (connections_in_use[pfds[i].fd])
+                    { // If the connection is in use, skip it
                         continue;
                     }
-                    connections_in_use[pfds[i].fd] = true;  // Mark the connection as in use
-                    int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0);  // receiving the msg from the client
+                    connections_in_use[pfds[i].fd] = true;             // Mark the connection as in use
+                    int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0); // receiving the msg from the client
                     int sender_fd = pfds[i].fd;
 
-                    if (nbytes <= 0) {  // Got error or connection closed by client
+                    if (nbytes <= 0)
+                    { // Got error or connection closed by client
 
-                        if (nbytes == 0) printf("pollserver: socket %d hung up\n", sender_fd);
-                        else perror("recv");
+                        if (nbytes == 0)
+                            printf("pollserver: socket %d hung up\n", sender_fd);
+                        else
+                            perror("recv");
 
                         close(pfds[i].fd);
                         del_from_pfds(pfds, i, &fd_count);
                         connections_in_use.erase(pfds[i].fd);
-
-                    } else {
+                    }
+                    else
+                    {
                         parseInput(buf, nbytes, n, m, weight, strat, action, actualAction, graphActions, mstStrats);
                     }
-                    
+
                     // Add task to LFP. NOTE which arguments we are passing by reference
-                    lfp.addTask([&g, action, sender_fd, actualAction, n, m, weight, strat, &pfds, &fd_count, &listener, &connections_in_use]() {
+                    lfp.addTask([&g, action, sender_fd, actualAction, n, m, weight, strat, &pfds, &fd_count, &listener, &connections_in_use]()
+                                {
                         cout << "Action received: " << actualAction << endl;
                         pair<string, Graph *> result = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
                         string msg = result.first;
@@ -476,10 +516,8 @@ int main(void)
                         }
                         delete[] msg_buf;
                         connections_in_use[sender_fd] = false;  // Mark the connection as free so the next event can be processed by main thread
-                        cout << "Connection " << sender_fd << " is now free" << endl;
-                    });
+                        cout << "Connection " << sender_fd << " is now free" << endl; });
                     msg = "";
-                   
                 }
             } // END handle data from client
         } // END got ready-to-read from poll()
@@ -488,4 +526,3 @@ int main(void)
 
     return 0;
 }
-

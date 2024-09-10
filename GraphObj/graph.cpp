@@ -1,15 +1,50 @@
 #include "graph.hpp"
 
 // Perform DFS to visit vertices in the graph
-void Graph::DFS_visit(Vertex v, std::map<Vertex, bool> &visited) const
+void Graph::DFS_visit(Vertex& v, std::map<Vertex, bool> &visited) const
 {
     visited[v] = true;
-    for (Edge e : v)
+    std::cout << "Visited vertex " << v.getId() << std::endl;
+    for (Edge& e : v)
     {
         Vertex u = e.getOther(v);
         if (!visited[u])
             DFS_visit(u, visited);
+            
     }
+}
+
+// Check if the graph is connected
+bool Graph::isConnected() const
+{
+    // Perform DFS to visit vertices in the graph
+    Vertex start = vertices.begin()->second;
+    std::map<Vertex, bool> visited;
+    
+    for (const auto &pair : vertices) // Initialize all vertices as not visited
+    {
+        visited[pair.second] = false;
+    }
+    //print the map
+    for (const auto &pair : visited)
+    {
+        std::cout << pair.first.getId() << " " << pair.second << std::endl;
+    }
+
+    //prints all edges
+    for(auto Edge : edges){
+        std::cout << Edge.getStart().getId() << " " << Edge.getEnd().getId() << " " << Edge.getWeight() << std::endl;
+    }
+
+    
+    DFS_visit(start, visited);
+    // Check if all vertices were visited
+    for (const auto &pair : visited)
+    {
+        if (!pair.second)
+            return false;
+    }
+    return true;
 }
 
 // Constructor to create an empty graph
@@ -119,15 +154,22 @@ void Graph::removeVertexWithEdges(Vertex v)
 // Add an edge to the graph, the edge is directed from start to end
 void Graph::addEdge(Edge e)
 {
-    e.getStart().addEdge(e);
+    vertices[e.getStart().getId()].addEdge(e);
     edges.insert(e);
 }
 
 // Remove an edge from the graph
 void Graph::removeEdge(Edge e)
 {
-    e.getStart().removeEdge(e);
+    vertices[e.getStart().getId()].removeEdge(e);
     edges.erase(e);
+}
+
+void Graph::addEdge(Vertex &start, Vertex &end, size_t weight)
+{
+    Edge e(start, end, weight);
+    addEdge(e);
+    e.getStart().addEdge(e);
 }
 
 // Get an iterator for the vertices in the graph
@@ -166,30 +208,10 @@ std::vector<std::vector<size_t>> Graph::adjacencyMatrix() const
     for(size_t i = 0; i < n; i++){
         adjMat[i][i] = 0;
     }
-
-   
     return adjMat;
 }
 
-// Check if the graph is connected
-bool Graph::isConnected() const
-{
-    // Perform DFS to visit vertices in the graph
-    Vertex start = vertices.begin()->second;
-    std::map<Vertex, bool> visited;
-    for (const auto &pair : vertices)
-    {
-        visited[pair.second] = false;
-    }
-    DFS_visit(start, visited);
-    // Check if all vertices were visited
-    for (const auto &pair : visited)
-    {
-        if (!pair.second)
-            return false;
-    }
-    return true;
-}
+
 
 // Get a vertex by its ID
 Vertex &Graph::getVertex(int id)

@@ -38,8 +38,6 @@ public:
     // Check if the edge contains a specific vertex
     bool contains(Vertex &target) const;
 
-    // Flip the direction of the edge
-    void flip();
 
     // Equality operator
     bool operator==(const Edge &other) const;
@@ -51,6 +49,8 @@ public:
     bool operator<(const Edge &other) const;
 };
 
+
+// Hash function for the Edge class, used in unordered_set
 namespace std
 {
     template <>

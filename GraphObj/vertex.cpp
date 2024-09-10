@@ -16,6 +16,7 @@ const bool &Vertex::getVisited() const { return visited; }
 // Add an edge to the vertex
 void Vertex::addEdge(Edge e)
 {
+    if (std::find(edges.begin(), edges.end(), e) == edges.end())
     edges.push_back(e);
 }
 
