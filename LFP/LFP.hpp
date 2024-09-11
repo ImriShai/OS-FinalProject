@@ -24,6 +24,7 @@ class LFP {
         LFP(int num_threads);
         ~LFP();
         void addTask(function<void()> task);  // Add a task to the queue
+        void addPipelineTask(function<void()> task);
         void start();
         void stop();
 };

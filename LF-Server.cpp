@@ -12,15 +12,18 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <poll.h>
-#include <algorithm> // Add this line
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <sstream>
 #include "GraphObj/graph.hpp"
 #include "MST/MST_Strategy.hpp"
 #include "MST/MST_Factory.hpp"
-#include "LFP.hpp"
+#include "LFP/LFP.hpp"
 #include <mutex>
+#include <shared_mutex>
+#include "ServerUtils/serverUtils.hpp"
+
 
 #define NUM_THREADS 4 // Number of threads in LFP
 #define PORT "9036"   // Port we're listening on
@@ -33,324 +36,28 @@ LFP lfp(NUM_THREADS); // Create an instance of LFP
 // bool designPattern = false;  // Leader-Folower == false, Pipeline == true
 
 // Mutex for the graph
-mutex graphMutex;
+std::shared_mutex graphMutex;
 
-// Function to convert a string to lowercase
-string toLowerCase(string s)
+std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
 {
-    transform(s.begin(), s.end(), s.begin(), ::tolower);
-    return s;
-}
-
-void initGraph(Graph *g, int m, int clientFd)
-{
-    string msg = "To create an edge u->v with weight w please enter the edge number in the format: u v w \n";
-    if (send(clientFd, msg.c_str(), msg.size(), 0) < 0)
-    {
-        perror("send");
-    }
-    int stdin_save = dup(STDIN_FILENO); // Save the current state of STDIN
-    dup2(clientFd, STDIN_FILENO);       // Redirect STDIN to the socket
-    for (int i = 0; i < m; i++)
-    { // Read the edges
-        size_t u, v, weight;
-        cin >> u >> v >> weight;
-        Edge e = Edge(g->getVertex(u - 1), g->getVertex(v - 1), weight);
-        g->addEdge(e); // Add edge from u to v
-    }
-    dup2(stdin_save, STDIN_FILENO); // Restore the original STDIN
-}
-
-std::vector<std::string> splitStringBySpaces(const std::string &input)
-{
-    std::istringstream stream(input);
-    std::vector<std::string> result;
-    std::string temp;
-
-    while (stream >> temp)
-    {
-        result.push_back(temp);
-    }
-
-    return result;
-}
-
-void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, string &strat, string &action, string &actualAction, const vector<string> &graphActions, const vector<string> &mstStrats)
-{
-    buf[nbytes] = '\0';
-    action = toLowerCase(string(buf));
-    vector<string> tokens = splitStringBySpaces(action);
-    if (tokens.size() > 0)
-    {
-        actualAction = tokens[0];
-    }
-    else
-    {
-        actualAction = "emptyMessage";
-    }
-    if (find(graphActions.begin(), graphActions.end(), actualAction) == graphActions.end())
-    {
-        actualAction = "message";
-    }
-    else if (actualAction == "mst")
-    {
-        if (tokens.size() > 1)
-        {
-            if (find(mstStrats.begin(), mstStrats.end(), tokens[1]) == mstStrats.end())
-            {
-                actualAction = "message";
-            }
-            else
-            {
-                actualAction = "mst";
-                action = tokens[0];
-                n = -1;
-                m = -1;
-                weight = -1;
-                strat = tokens[1];
-            }
-        }
-    }
-    else if (actualAction == "newgraph")
-    {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = -1;
-    }
-    else if (actualAction == "newedge")
-    {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = stoi(tokens[3]);
-    }
-    else
-    {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = -1;
-    }
-}
-
-unordered_set<Vertex> initVertices(int n)
-{
-    unordered_set<Vertex> vertices;
-    for (size_t i = 0; i < n; i++)
-    {
-        vertices.insert(Vertex(i));
-    }
-    return vertices;
-}
-
-pair<string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
-{
-    unique_lock<std::mutex> lock(graphMutex); // locking the mutex:
-    cout << "Creating a new graph with " << n << " vertices and " << m << " edges" << endl;
-
-    if (g != nullptr)
-        delete g;
-    unordered_set<Vertex> vertices = initVertices(n); // Initialize the vertices
-
-    g = new Graph(vertices);   // Create a new graph of n vertices
-    initGraph(g, m, clientFd); // Initialize the graph with m edges
-
-    string msg = "Client " + to_string(clientFd) + " successfully created a new Graph with " + to_string(n) + " vertices and " + to_string(m) + " edges" + "\n";
-    cout << "Graph created successfully\n";
-    return {msg, g};
-}
-
-pair<string, Graph *> newEdge(size_t n, size_t m, size_t weight, int clientFd, Graph *g)
-{
-    // Locking the graph
-    unique_lock<std::mutex> lock(graphMutex);
-    cout << "Adding an edge from " << n << " to " << m << endl;
-    g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
-    string msg = "Client " + to_string(clientFd) + " added an edge from " + to_string(n) + " to " + to_string(m) + " with weight " + to_string(weight) + "\n";
-
-    return {msg, g};
-}
-
-pair<string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
-{
-    // Locking the graph
-    unique_lock<std::mutex> lock(graphMutex);
-    cout << "Removing an edge from " << n << " to " << m << endl;
-    g->removeEdge(Edge{g->getVertex(n - 1), g->getVertex(m - 1)}); // Remove edge from u to v
-    string msg = "Client " + to_string(clientFd) + " removed an edge from " + to_string(n) + " to " + to_string(m) + "\n";
-    return {msg, g};
-}
-
-pair<string, Graph *> MST(Graph *g, int clientFd, string strat) // many to do here
-{
-    // unique_lock<std::mutex> lock(graphMutex); //   Locking the graph
     
     // implementing Leader-Follower with global variable "lfp":
     lfp.addTask([clientFd, strat, g]() {
+        
+        // Locking the graph
+        std::shared_lock<std::shared_mutex> lock(graphMutex);
+        std::cout << "User " << clientFd << " requested to find MST of the Graph, locking graph" << std::endl;
         // Perform the operation
-        string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
+        std::string msg = "Client " + std::to_string(clientFd) + " requested to find MST of the Graph" + "\n";
         msg+= "MST Strategy: " + strat + "\n";
         Graph mst = (*MST_Factory::getInstance()->createMST(strat))(g);
         msg += "MSTs' stats: \n" + mst.stats();
         send(clientFd, msg.c_str(), msg.size(), 0);
+        std::cout << "User " << clientFd << " finished finding MST of the Graph, unlocking graph" << endl;
     });
     return {"", nullptr};
 }
 
-pair<string, Graph *> handleInput(Graph *g, string action, int clientFd, string actualAction, int n, int m, int w, string strat)
-{
-    string msg;
-    vector<string> tokens = splitStringBySpaces(action);
-    if (tokens.size() < 1)
-    {
-        msg = "User " + to_string(clientFd) + " sent an empty message\n";
-        return {msg, nullptr};
-    }
-
-    if (actualAction == "newgraph")
-    { // format: newgraph n m
-        return newGraph(n, m, clientFd, g);
-    }
-    else if (actualAction == "newedge")
-    { // format: newedge n m (add an edge from n to m)
-        if (g != nullptr)
-        {
-            return newEdge(static_cast<size_t>(n), static_cast<size_t>(m), static_cast<size_t>(w), clientFd, g);
-        }
-        else
-        {
-            msg = "Client " + to_string(clientFd) + " tried to perform the operation but there is no graph\n";
-            return {msg, nullptr};
-        }
-    }
-    else if (actualAction == "removeedge")
-    { // format: removeedge n m (remove an edge from n to m)
-        if (g != nullptr)
-        {
-            return removeedge(n, m, clientFd, g);
-        }
-        else
-        {
-            msg = "Client " + to_string(clientFd) + " tried to perform the operation but there is no graph\n";
-            return {msg, nullptr};
-        }
-    }
-    else if (actualAction == "mst")
-    { // format: MST
-        if (g == nullptr)
-        {
-            msg = "Client " + to_string(clientFd) + " tried to perform the operation but there is no graph\n";
-            return {msg, nullptr};
-        }
-        else if(!g->isConnected())
-        {
-            msg = "Client " + to_string(clientFd) + " tried to perform the operation but the graph is not connected therefore it doesn't have a MST\n";
-            return {msg, nullptr};
-        }
-        else
-        {
-            return MST(g, clientFd, strat);
-        }
-       
-    }
-    else
-    {
-        msg = "Client " + to_string(clientFd) + " sent a message:" + action;
-        return {msg, nullptr};
-    }
-}
-
-// Get sockaddr, IPv4 or IPv6:
-void *getInAddr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET)
-    {
-        return &(((struct sockaddr_in *)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
-}
-
-// Return a listening socket
-int getListenerSocket(void)
-{
-    int listener; // Listening socket descriptor
-    int yes = 1;  // For setsockopt() SO_REUSEADDR, below
-    int rv;
-
-    struct addrinfo hints, *ai, *p;
-
-    // Get us a socket and bind it
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-    if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0)
-    {
-        fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
-        exit(1);
-    }
-
-    for (p = ai; p != NULL; p = p->ai_next)
-    {
-        listener = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if (listener < 0)
-        {
-            continue;
-        }
-
-        // Lose the pesky "address already in use" error message
-        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-
-        if (bind(listener, p->ai_addr, p->ai_addrlen) < 0)
-        {
-            close(listener);
-            continue;
-        }
-
-        break;
-    }
-
-    freeaddrinfo(ai); // All done with this
-
-    // If we got here, it means we didn't get bound
-    if (p == NULL)
-    {
-        return -1;
-    }
-
-    // Listen
-    if (listen(listener, 10) == -1)
-    {
-        return -1;
-    }
-
-    return listener;
-}
-
-// Add a new file descriptor to the set
-void add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
-{
-    // If we don't have room, add more space in the pfds array
-    if (*fd_count == *fd_size)
-    {
-        *fd_size *= 2; // Double it
-
-        *pfds = (struct pollfd *)realloc(*pfds, sizeof(**pfds) * (size_t)(*fd_size));
-    }
-
-    (*pfds)[*fd_count].fd = newfd;
-    (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
-
-    (*fd_count)++;
-}
-
-// Remove an index from the set
-void del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
-{
-    // Copy the one from the end over this one
-    pfds[i] = pfds[*fd_count - 1];
-
-    (*fd_count)--;
-}
 
 // Main
 int main(void)

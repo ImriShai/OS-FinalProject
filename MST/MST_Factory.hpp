@@ -1,3 +1,4 @@
+#pragma once
 #include "MST_Strategy.hpp"
 #include <string>
 #include <map>

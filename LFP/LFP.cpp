@@ -22,6 +22,7 @@ void LFP::addTask(function<void()> task) {
     condition.notify_one();  // Notify one of the threads
 }
 
+
 void LFP::start() {
     stopFlag = false;  
 }
@@ -51,5 +52,6 @@ void LFP::worker(int id) {
         }
         std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
         task();  // Execute the task
+        
     }
 }
