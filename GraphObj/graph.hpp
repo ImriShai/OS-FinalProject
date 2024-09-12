@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include <queue>
+#include <cstddef>
+#include <memory>
 #define INF static_cast<size_t>(-1)
 
 class Graph
@@ -16,6 +18,9 @@ private:
     std::map<int, Vertex> vertices;
     // Set to store edges in the graph
     std::unordered_set<Edge, std::hash<Edge>> edges;
+
+    std::unique_ptr<std::vector<std::vector<size_t>>> distances;
+    std::unique_ptr<std::vector<std::vector<size_t>>> parent;
 
    
 
@@ -38,6 +43,11 @@ private:
 
     // Get the distances between vertices in the graph and the parent matrix
     std::string allShortestPaths( std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const;
+
+    // Get the distances between vertices in the graph and the parent matrix
+    std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> floydWarshall() const;
+
+    std::string Graph::allShortestPaths() const;
 
     
 
@@ -103,6 +113,12 @@ public:
     std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> getDistances() const;
 
     std::string stats() const;
+
+    void setDistances(std::vector<std::vector<size_t>>);
+    void setParent(std::vector<std::vector<size_t>>);
+
+    
+
 
 
 

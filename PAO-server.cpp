@@ -35,10 +35,12 @@ using namespace std;
 LFP lfp(NUM_THREADS); // Create an instance of LFP
 // bool designPattern = false;  // Leader-Folower == false, Pipeline == true
 
+Graph *mst = nullptr;  // before sending it make sure it not nullptr
+
 // Mutex for the graph
 std::shared_mutex graphMutex;
 
-std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
+std::pair<std::string, Graph *> MST(Graph *g, Graph &mst ,int clientFd, const std::string& strat) // many to do here
 {
     
     // Create a list of functions to be executed by the PAO

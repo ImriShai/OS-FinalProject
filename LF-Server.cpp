@@ -40,7 +40,6 @@ std::shared_mutex graphMutex;
 
 std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
 {
-    
     // implementing Leader-Follower with global variable "lfp":
     lfp.addTask([clientFd, strat, g]() {
         
