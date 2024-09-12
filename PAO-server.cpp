@@ -23,44 +23,54 @@
 #include <mutex>
 #include <shared_mutex>
 #include "ServerUtils/serverUtils.hpp"
+#include "PAO/PAO.hpp"
+#include <memory>
 
-
-#define NUM_THREADS 4 // Number of threads in LFP
 #define PORT "9036"   // Port we're listening on
 #define WELCOME_MSG_SIZE 480
 
 using namespace std;
 
-// void* designP = nullptr;
-LFP lfp(NUM_THREADS); // Create an instance of LFP
-// bool designPattern = false;  // Leader-Folower == false, Pipeline == true
-
-Graph *mst = nullptr;  // before sending it make sure it not nullptr
-
 // Mutex for the graph
 std::shared_mutex graphMutex;
+std::mutex mst_mutex;
 
-std::pair<std::string, Graph *> MST(Graph *g, Graph &mst ,int clientFd, const std::string& strat) // many to do here
+//PAO
+unique_ptr<PAO> pao = nullptr;
+Graph* mstPtr = nullptr;
+
+std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
 {
     
-    // Create a list of functions to be executed by the PAO
-    std::vector<std::function<void(Graph&, std::string&)>> functions = {
-        [](Graph& g, std::string& msg) { msg += "Total weight of edges: " + std::to_string(g->totalWeight()) + "\n"; },
-        [](Graph& g, std::string& msg) { std::vector<std::vector<size_t>> dist, parents; std::tie(dist, parents) = g.getDistances(); msg += g.longestPath(dist) + "\n"; },
-        [](Graph& g, std::string& msg) { std::vector<std::vector<size_t>> dist, parents; std::tie(dist, parents) = g.getDistances(); msg += "The average distance between vertices is: " + std::to_string(g.avgDistance(dist)) + "\n"; },
-        [](Graph& g, std::string& msg) { std::vector<std::vector<size_t>> dist, parents; std::tie(dist, parents) = g.getDistances(); msg += "The shortest paths are: \n" + g.allShortestPaths(dist, parents) + "\n"; }
-    };
-
+    pao->addTask(g, strat , clientFd);
     // give it to pao global object and the client fd
+    std::cout << "User " << clientFd << " requested to find MST of the Graph" << std::endl;
     return {"", nullptr};
 }
 
-
 // Main
 int main(void)
-{
-    lfp.start();          // Start the threads in LFP
+{   
+    // Create a list of functions to be executed by the PAO
+    std::vector<std::function<string(Graph**, std::string, int)>> functions = {
+        [](Graph** g, std::string strat, int clientFd) {
+                                                        mst_mutex.lock();
+                                                        cout << "sleep 7 sec" << endl;
+                                                        sleep(7);
+                                                        Graph temp = (*MST_Factory::getInstance()->createMST(strat))(*g);
+                                                        *g = new Graph(temp, true);
+                                                        string msg = "MST created using " + strat + " strategy\n";
+                                                        return msg; },
+        [](Graph** mst, std::string msg, int clientFd) { msg = "Total weight of edges: " + std::to_string((*mst)->totalWeight()) + "\n"; return msg; },
+        [](Graph** mst, std::string msg, int clientFd) { msg = (*mst)->longestPath() + "\n"; return msg;},
+        [](Graph** mst, std::string msg, int clientFd) { msg = "The average distance between vertices is: " + std::to_string((*mst)->avgDistance()) + "\n"; return msg;},
+        [](Graph** mst, std::string msg, int clientFd) { msg = "The shortest paths are: \n" + (*mst)->allShortestPaths() + "\n"; delete *mst; mst_mutex.unlock(); return msg;}
+    };
 
+    pao = make_unique<PAO>(functions);
+    pao->start();
+
+    
     Graph *g = nullptr;
     int listener; // Listening socket descriptor
     pair<string, Graph *> ret;

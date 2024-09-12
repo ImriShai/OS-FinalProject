@@ -22,33 +22,17 @@ private:
     std::unique_ptr<std::vector<std::vector<size_t>>> distances;
     std::unique_ptr<std::vector<std::vector<size_t>>> parent;
 
-   
-
-
-    // Get total weight of the graph
-    size_t totalWeight() const;
-
-    // Get the longest path in the graph
-    std::string longestPath() const;
     // Get the longest path in the graph given the distances
     std::string longestPath(std::vector<std::vector<size_t>> &dist) const;
-
-    // Get the Avg distance in the graph
-    double avgDistance() const;
     double avgDistance(std::vector<std::vector<size_t>> &dist) const;
     // Get the shortest path in the graph
     std::string shortestPath(size_t start, size_t end) const;
     // Get the shortest path in the graph given the distances
     std::string shortestPath(size_t start, size_t end, std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const;
-
     // Get the distances between vertices in the graph and the parent matrix
     std::string allShortestPaths( std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const;
 
-    // Get the distances between vertices in the graph and the parent matrix
-    std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> floydWarshall() const;
-
-    std::string Graph::allShortestPaths() const;
-
+   
     
 
 
@@ -114,8 +98,22 @@ public:
 
     std::string stats() const;
 
+    // Get the Avg distance in the graph
+    double avgDistance() const;
+
+    std::string allShortestPaths() const;
+
+    // Get total weight of the graph
+    size_t totalWeight() const;
+
+    // Get the longest path in the graph
+    std::string longestPath() const;
+    
     void setDistances(std::vector<std::vector<size_t>>);
     void setParent(std::vector<std::vector<size_t>>);
+
+     // Get the distances between vertices in the graph and the parent matrix
+    std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> floydWarshall() const;
 
     
 

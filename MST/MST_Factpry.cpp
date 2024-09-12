@@ -21,7 +21,11 @@ MST_Factory *MST_Factory::getInstance()
 
 MST_Strategy *MST_Factory::createMST(std::string type)
 {
-    return strats[type];
+    if(strats.find(type) != strats.end())
+    {
+        return strats[type];
+    }
+    throw std::invalid_argument("Invalid MST Strategy");
 }
 
 void MST_Factory::cleanUp()

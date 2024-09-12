@@ -34,11 +34,11 @@ Graph Prim::operator()(Graph *g)
             }
         }
     }
-    std::vector<std::vector<size_t>> dist, per;
-    std::tie(dist, per) = mst.floydWarshall(); // Get the distance and parent matrices of the MST
-    //update distance and parent matrices in mst
-    mst.setDistanceMatrix(dist);
-    mst.setParentMatrix(per);
+  std::vector<std::vector<size_t>> dist, per;
+        std::tie(dist, per) = mst.floydWarshall(); // Get the distance and parent matrices of the MST
+        //update distance and parent matrices in mst
+        mst.setDistances(dist);
+        mst.setParent(per);
     
 
     return mst; // Return the MST

@@ -33,12 +33,13 @@ using namespace std;
 
 // void* designP = nullptr;
 LFP lfp(NUM_THREADS); // Create an instance of LFP
+mutex mst_mutex;
 // bool designPattern = false;  // Leader-Folower == false, Pipeline == true
 
 // Mutex for the graph
-std::shared_mutex graphMutex;
+shared_mutex graphMutex;
 
-std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
+pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
 {
     // implementing Leader-Follower with global variable "lfp":
     lfp.addTask([clientFd, strat, g]() {

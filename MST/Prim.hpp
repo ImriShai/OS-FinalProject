@@ -2,10 +2,6 @@
 #include <queue>
 #include <vector>
 
-
-
-
-
 class Prim : public MST_Strategy
 {
 public:
