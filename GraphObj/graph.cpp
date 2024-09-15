@@ -28,10 +28,10 @@ bool Graph::isConnected() const
 }
 
 // Constructor to create an empty graph
-Graph::Graph() : vertices(), edges(), distances(nullptr), parent(nullptr) {}
+Graph::Graph() : vertices(), edges(), distances(), parent() {}
 
 // Constructor to create a graph from a set of vertices that may already contain edges
-Graph::Graph(std::unordered_set<Vertex> inputVxs) : vertices(), edges(), distances(nullptr), parent(nullptr)
+Graph::Graph(std::unordered_set<Vertex> inputVxs) : vertices(), edges(), distances(), parent()
 {
     // Add vertices to the graph
     for (auto v : inputVxs)
@@ -48,46 +48,55 @@ Graph::Graph(std::unordered_set<Vertex> inputVxs) : vertices(), edges(), distanc
     
 }
 
+
+
 // Copy constructor with option to not copy edges
-Graph::Graph(const Graph &other, bool copyEdges) : vertices(), edges(), distances(nullptr), parent(nullptr)
-{
+Graph::Graph(const Graph &other, bool copyEdges) : vertices(), edges(), distances(), parent()
+{   
+    // Copy all vertices:
     for (const auto &pair : other.vertices)
     {
-        vertices[pair.first] = pair.second;
+        vertices[pair.first] = pair.second;  // deep copy vertices
     }
+
     if (copyEdges)
     {
+        // Copy all edges:
         for (const auto &e : other.edges)
         {
             edges.insert(e);
         }
-        if (other.distances != nullptr)
+        // Copy all distances:
+        if (other.distances.size() != 0)
         {
-            // deep copy distances, notice it's unique_ptr
-            size_t n = other.numVertices();
-            distances = std::make_unique<std::vector<std::vector<size_t>>>(n, std::vector<size_t>(n, INF));
+            // deep copy distances:
+            size_t n = other.distances.size();
+            distances = std::vector<std::vector<size_t>>(n, std::vector<size_t>(n, INF));
             for (size_t i = 0; i < n; i++)
             {
                 for (size_t j = 0; j < n; j++)
                 {
-                    (*distances)[i][j] = (*other.distances)[i][j];
+                    distances[i][j] = other.distances[i][j];
                 }
             }
         }
-        if (other.parent != nullptr)
+        
+        // Copy all parents:
+        if (other.parent.size() != 0)
         {
-            // deep copy parent, notice it's unique_ptr
-            size_t n = other.numVertices();
-            parent = std::make_unique<std::vector<std::vector<size_t>>>(n, std::vector<size_t>(n, INF));
+            // deep copy distances, notice it's unique_ptr
+            size_t n = other.parent.size();
+            parent = std::vector<std::vector<size_t>>(n, std::vector<size_t>(n, INF));
             for (size_t i = 0; i < n; i++)
             {
                 for (size_t j = 0; j < n; j++)
                 {
-                    (*parent)[i][j] = (*other.parent)[i][j];
+                    parent[i][j] = other.parent[i][j];
                 }
             }
         }
     }
+
     else
     { // Remove all edges
         for (auto &pair : vertices)
@@ -135,8 +144,7 @@ std::unordered_set<Edge>::iterator Graph::edgesEnd()
 // Add a vertex and all its edges to the graph
 void Graph::addVertexWithEdges(Vertex v)
 {
-    distances = nullptr;
-    parent = nullptr;
+   cleanDistParent();
 
     if (vertices.find(v.getId()) != vertices.end())
         return;
@@ -151,9 +159,8 @@ void Graph::addVertexWithEdges(Vertex v)
 // Remove a vertex from the graph
 void Graph::removeVertexWithEdges(Vertex v)
 {
-    distances = nullptr;
-    parent = nullptr;
-
+    cleanDistParent();
+    
     if (vertices.find(v.getId()) == vertices.end())
         return;
     vertices.erase(v.getId());
@@ -166,8 +173,7 @@ void Graph::removeVertexWithEdges(Vertex v)
 // Add an edge to the graph, the edge is directed from start to end
 void Graph::addEdge(Edge e)
 {
-    distances = nullptr;
-    parent = nullptr;
+    cleanDistParent();
 
     vertices[e.getStart().getId()].addEdge(e);
     edges.insert(e);
@@ -176,8 +182,7 @@ void Graph::addEdge(Edge e)
 // Remove an edge from the graph
 void Graph::removeEdge(Edge e)
 {
-    distances = nullptr;
-    parent = nullptr;
+    cleanDistParent();
 
     vertices[e.getStart().getId()].removeEdge(e);
     edges.erase(e);
@@ -185,8 +190,7 @@ void Graph::removeEdge(Edge e)
 
 void Graph::addEdge(Vertex &start, Vertex &end, size_t weight)
 {
-    distances = nullptr;
-    parent = nullptr;
+   cleanDistParent();
 
     Edge e(start, end, weight);
     addEdge(e);
@@ -255,7 +259,7 @@ size_t Graph::totalWeight() const
     return total;
 }
 
-std::string Graph::longestPath(std::vector<std::vector<size_t>> &dist) const
+std::string Graph::longestPath(const std::vector<std::vector<size_t>> &dist) const
 {
     size_t n = numVertices();
     size_t maxDist = 0;
@@ -277,25 +281,25 @@ std::string Graph::longestPath(std::vector<std::vector<size_t>> &dist) const
 
 std::string Graph::longestPath() const
 {
-    if (distances == nullptr)
+    if (distances.empty())
     {
         std::vector<std::vector<size_t>> dist = getDistances().first;
         return longestPath(dist);
     }
-    return longestPath(*distances);
+    return longestPath(distances);
 }
 
 // gets the distances between vertices in the graph and the parent matrix for undirected graph
 std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Graph::getDistances() const
 {
-    if (this->distances == nullptr)
+    if (this->distances.empty())
         throw std::runtime_error("Distances not calculated");
-    if (this->parent == nullptr)
+    if (this->parent.empty())
         throw std::runtime_error("Parent not calculated");
-    return std::make_pair(*distances, *parent);
+    return std::make_pair(distances, parent);
 }
 
-double Graph::avgDistance(std::vector<std::vector<size_t>> &dist) const
+double Graph::avgDistance(const std::vector<std::vector<size_t>> &dist) const
 {
     size_t totalDist = 0;
     size_t count = 0;
@@ -314,18 +318,18 @@ double Graph::avgDistance(std::vector<std::vector<size_t>> &dist) const
 
 double Graph::avgDistance() const
 {
-    if (distances == nullptr)
+    if (distances.empty())
     {
         std::vector<std::vector<size_t>> dist = getDistances().first;
         return avgDistance(dist);
     }
-    return avgDistance(*distances);
+    return avgDistance(distances);
 }
 
 std::string Graph::shortestPath(size_t start, size_t end) const
 {
 
-    if (distances == nullptr || parent == nullptr)
+    if (distances.empty())
     {
 
         std::vector<std::vector<size_t>> dist, parent;
@@ -333,10 +337,10 @@ std::string Graph::shortestPath(size_t start, size_t end) const
         return shortestPath(start, end, dist, parent);
     }
 
-    return shortestPath(start, end, *distances, *parent);
+    return shortestPath(start, end, distances, parent);
 }
 
-std::string Graph::shortestPath(size_t start, size_t end, std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parents) const
+std::string Graph::shortestPath(size_t start, size_t end, const std::vector<std::vector<size_t>> &dist,const std::vector<std::vector<size_t>> &parents) const
 {
 
     if (start >= numVertices() || end >= numVertices())
@@ -372,7 +376,7 @@ std::string Graph::shortestPath(size_t start, size_t end, std::vector<std::vecto
 }
 
 // gets the shortest path between all vertices in the graph, returns a string with all the paths in the graph for undirected graph
-std::string Graph::allShortestPaths(std::vector<std::vector<size_t>> &dist, std::vector<std::vector<size_t>> &parent) const
+std::string Graph::allShortestPaths(const std::vector<std::vector<size_t>> &dist, const std::vector<std::vector<size_t>> &parent) const
 {
     size_t n = numVertices();
     std::string paths = "Shortest paths between all vertices in the graph are: \n";
@@ -388,13 +392,15 @@ std::string Graph::allShortestPaths(std::vector<std::vector<size_t>> &dist, std:
 
 std::string Graph::allShortestPaths() const
 {
-    if (distances == nullptr)
+    // If distances are not calculated, calculate them
+    if (distances.empty())
     {
+        // Get the distances between vertices in the graph and the parent matrix
         std::vector<std::vector<size_t>> dist, parent;
         std::tie(dist, parent) = floydWarshall();
         return allShortestPaths(dist, parent);
     }
-    return allShortestPaths(*distances, *parent);
+    return allShortestPaths(distances, parent);
 }
 
 std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Graph::floydWarshall() const
@@ -451,7 +457,7 @@ std::string Graph::stats() const
 {
     std::vector<std::vector<size_t>> dist, parents;
     // Get the distances between vertices in the graph and the parent matrix
-    if (distances == nullptr || parent == nullptr)
+    if (distances.empty() || parent.empty())
     {
         std::tie(dist, parents) = floydWarshall();
     }
@@ -469,10 +475,24 @@ std::string Graph::stats() const
 
 void Graph::setDistances(std::vector<std::vector<size_t>> dist)
 {
-    distances = std::make_unique<std::vector<std::vector<size_t>>>(dist);
+    distances = std::vector<std::vector<size_t>>(dist);
 }
 
 void Graph::setParent(std::vector<std::vector<size_t>> pare)
 {
-    parent = std::make_unique<std::vector<std::vector<size_t>>>(pare);
+    parent = std::vector<std::vector<size_t>>(pare);
 }
+
+void Graph::cleanDistParent()
+{
+    //clearing the dist matrix and parent matrix
+    for(size_t i = 0; i< distances.size(); i++){
+        distances[i].clear();
+    }
+    for(size_t i = 0; i< parent.size(); i++){
+        parent[i].clear();
+    }
+    parent.clear();
+    distances.clear();
+}
+  

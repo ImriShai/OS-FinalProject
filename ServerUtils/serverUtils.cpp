@@ -1,9 +1,6 @@
 #include "serverUtils.hpp"
 
 extern LFP lfp; // Leader-Follower pattern instance
-extern std::shared_mutex graphMutex; // Mutex to protect graph operations
-extern std::mutex mst_mutex; // Mutex to protect MST operations
-
 
 // Function to convert a string to lowercase
 std::string toLowerCase(std::string s)
@@ -37,8 +34,7 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
     std::vector<std::string> result;
     std::string temp;
 
-    while (stream >> temp)
-    {
+    while (stream >> temp){
         result.push_back(temp);
     }
 
@@ -113,15 +109,6 @@ std::unordered_set<Vertex> initVertices(int n)
 
 std::pair<std::string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
 {
-    // Locking the graph
-    std::unique_lock<std::shared_mutex> lock(graphMutex, std::try_to_lock);
-    if (!lock.owns_lock() || !mst_mutex.try_lock()) //if the lock is not owned, then there is an MST operation in progress
-    {
-        
-        std::string msg = "User " + std::to_string(clientFd) + " requested to create a new graph with " + std::to_string(n) + " vertices and " + std::to_string(m) + " edges but the graph is locked\n";
-        std::cout << msg;
-        return {msg, nullptr};
-    }
     std::cout << "Creating a new graph with " << n << " vertices and " << m << " edges" << std::endl;
 
     if (g != nullptr)
@@ -133,59 +120,24 @@ std::pair<std::string, Graph *> newGraph(int n, int m, int clientFd, Graph *g)
 
     std::string msg = "Client " + std::to_string(clientFd) + " successfully created a new Graph with " + std::to_string(n) + " vertices and " + std::to_string(m) + " edges" + "\n";
     std::cout << "Graph created successfully\n";
-    try{
-        mst_mutex.unlock();
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
     return {msg, g};
 }
 
 std::pair<std::string, Graph *> newEdge(size_t n, size_t m, size_t weight, int clientFd, Graph *g)
 {
-    // Locking the graph
-    std::unique_lock<std::shared_mutex> lock(graphMutex, std::try_to_lock);
-    if (!lock.owns_lock()||!mst_mutex.try_lock())//if the lock is not owned, then there is an MST operation in progress
-    {
-        std::string msg = "User " + std::to_string(clientFd) + " requested to add an edge from " + std::to_string(n) + " to " + std::to_string(m) + " with weight " + std::to_string(weight) + " but the graph is locked\n";
-        std::cout << msg;
-        return {msg, nullptr};
-    }
     std::cout << "Adding an edge from " << n << " to " << m << std::endl;
     g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
     std::string msg = "Client " + std::to_string(clientFd) + " added an edge from " + std::to_string(n) + " to " + std::to_string(m) + " with weight " + std::to_string(weight) + "\n";
- try{
-        mst_mutex.unlock();
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+    
     return {msg, g};
 }
 
 std::pair<std::string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
 {
-    // Locking the graph
-    std::unique_lock<std::shared_mutex> lock(graphMutex, std::try_to_lock);
-    if (!lock.owns_lock() || !mst_mutex.try_lock())//if the lock is not owned, then there is an MST operation in progress//if the lock is not owned, then there is an MST operation in progress
-    {
-        std::string msg = "User " + std::to_string(clientFd) + " requested to remove an edge from " + std::to_string(n) + " to " + std::to_string(m) + " but the graph is locked\n";
-        std::cout << msg;
-        return {msg, nullptr};
-    }
     std::cout << "Removing an edge from " << n << " to " << m << std::endl;
     g->removeEdge(Edge{g->getVertex(n - 1), g->getVertex(m - 1)}); // Remove edge from u to v
     std::string msg = "Client " + std::to_string(clientFd) + " removed an edge from " + std::to_string(n) + " to " + std::to_string(m) + "\n";
-   try{
-        mst_mutex.unlock();
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+    
     return {msg, g};
 }
 
@@ -196,14 +148,12 @@ std::pair<std::string, Graph *> handleInput(Graph *g, std::string action, int cl
 {
     std::string msg;
     std::vector<std::string> tokens = splitStringBySpaces(action);
-    if (tokens.size() < 1)
-    {
+    if (tokens.size() < 1){
         msg = "User " + std::to_string(clientFd) + " sent an empty message\n";
         return {msg, nullptr};
     }
 
-    if (actualAction == "newgraph")
-    { // format: newgraph n m
+    if (actualAction == "newgraph"){ // format: newgraph n m
         return newGraph(n, m, clientFd, g);
     }
     else if (actualAction == "newedge")

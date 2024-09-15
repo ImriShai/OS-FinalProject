@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 class Edge;
 
@@ -61,6 +62,8 @@ public:
     {
         return id < other.id;
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const Vertex &v);
 };
 
 namespace std

@@ -19,206 +19,245 @@
 #include "GraphObj/graph.hpp"
 #include "MST/MST_Strategy.hpp"
 #include "MST/MST_Factory.hpp"
-#include "LFP/LFP.hpp"
-#include <mutex>
-#include <shared_mutex>
 #include "ServerUtils/serverUtils.hpp"
 #include "PAO/PAO.hpp"
 #include <memory>
+
+// to handle the CTRL+C signal
+#include <signal.h>
+#include <atomic>
 
 #define PORT "9036"   // Port we're listening on
 #define WELCOME_MSG_SIZE 480
 
 using namespace std;
 
-// Mutex for the graph
-std::shared_mutex graphMutex;
-std::mutex mst_mutex;
+/**
+ * Struct to store the graph and the message to be sent to the client.
+ * This will be used by the PAO object to execute the functions.
+ */
+struct Triple{
+    Graph* g;
+    string msg;
+    int clientFd;
+};
 
-//PAO
-unique_ptr<PAO> pao = nullptr;
-Graph* mstPtr = nullptr;
+// global variable:
+map<int, pair<Graph*, Triple*>> clients_graphs;  // dictionary to store the client file descriptor and its graph
+struct pollfd* pfds;  // set of file descriptors (global to maintain correct memory management when interrupting the server)
+int fd_count = 0;
+unique_ptr<PAO> pao = nullptr; // unique pointer to the PAO object
 
-std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat) // many to do here
+/**
+ * Function to handle MST request.
+ * creates a new triple on the heap and adds it to the PAO object as a task.
+ */
+std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat)
 {
-    
-    pao->addTask(g, strat , clientFd);
-    // give it to pao global object and the client fd
+    clients_graphs[clientFd].second = new Triple{g, strat, clientFd};  // creating a new triple on the heap := {&g, strat, clientFd}. it will be deleted in the last function
+    pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
+
     std::cout << "User " << clientFd << " requested to find MST of the Graph" << std::endl;
     return {"", nullptr};
 }
 
+/**
+ * Handle the signal, actually stopping the server's while loop
+ */
+void handleSig(int sig) {
+    cout << "\nPAO-server: cleaning up resources..." << endl;
+
+    // graphs:
+
+    for(auto& graph_triple : clients_graphs) {
+        if(graph_triple.second.first != nullptr) {
+            delete graph_triple.second.first;
+        }
+        if(graph_triple.second.second != nullptr) {
+            delete graph_triple.second.second;
+        }
+    }
+
+    cout << "PAO-server: Graphs freed," << endl;
+
+    // Clients: cleans the pfds
+    for (int i = 0; i < fd_count; i++) {
+        if (pfds[i].fd != -1) {
+            close(pfds[i].fd);
+        }
+    }
+    free(pfds);
+    cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
+}
+
+ 
 // Main
-int main(void)
-{   
+int main(void) {   
+
     // Create a list of functions to be executed by the PAO
-    std::vector<std::function<string(Graph**, std::string, int)>> functions = {
-        [](Graph** g, std::string strat, int clientFd) {
-                                                        mst_mutex.lock();
-                                                        cout << "sleep 7 sec" << endl;
-                                                        sleep(7);
-                                                        Graph temp = (*MST_Factory::getInstance()->createMST(strat))(*g);
-                                                        *g = new Graph(temp, true);
-                                                        string msg = "MST created using " + strat + " strategy\n";
-                                                        return msg; },
-        [](Graph** mst, std::string msg, int clientFd) { msg = "Total weight of edges: " + std::to_string((*mst)->totalWeight()) + "\n"; return msg; },
-        [](Graph** mst, std::string msg, int clientFd) { msg = (*mst)->longestPath() + "\n"; return msg;},
-        [](Graph** mst, std::string msg, int clientFd) { msg = "The average distance between vertices is: " + std::to_string((*mst)->avgDistance()) + "\n"; return msg;},
-        [](Graph** mst, std::string msg, int clientFd) { msg = "The shortest paths are: \n" + (*mst)->allShortestPaths() + "\n"; delete *mst; mst_mutex.unlock(); return msg;}
+    std::vector<std::function<void(void*)>> functions = {
+
+        // first function calculates the MST
+        [](void* triple) { Triple* t = (Triple*)triple;   // cast the void* to Triple*
+                            MST_Strategy* MST_strategy = MST_Factory::getInstance()->createMST(t->msg);  // create the MST strategy
+                            Graph* tmp = (*MST_strategy)(t->g);                                         // create the MST using the strategy
+                            t->g =  tmp;                                                        // create the MST using the strategy and store it in temp
+                            t->msg = "MST created using " + t->msg + " strategy\n";},              // set the message of the triple to the message of the MST creation
+
+        // second function calculates the total weight of the edges
+        [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            t->msg += "Total weight of edges: " + std::to_string((t->g)->totalWeight()) + "\n";},
+
+        // third function calculates the longest path
+        [](void* triple) {Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            t->msg += (t->g)->longestPath() + "\n";},
+
+        // fourth function calculates the average distance between vertices
+        [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            t->msg += "The average distance between vertices is: " + std::to_string((t->g)->avgDistance()) + "\n";},
+
+        // fifth function calculates the shortest paths
+        [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            t->msg += "The shortest paths are: \n" + (t->g)->allShortestPaths() + "\n"; 
+                            delete t->g;},  // delete the mst graph
+        
+        // sixth function sends the result msg to the clientFd and deletes the triple
+        [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            if (send(t->clientFd, t->msg.c_str(), t->msg.size(), 0) < 0)  // send the message to the client
+                                perror("send");
+                            delete t;
+                            t = nullptr;}  // delete the triple
     };
 
-    pao = make_unique<PAO>(functions);
-    pao->start();
+    pao = make_unique<PAO>(functions);  // create a new PAO object with the functions
+    pao->start();  // start the PAO object (start the threads). no need to stop it because it will be stopped in the destructor.
+    const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
+    const vector<string> mstStrats = {"prim", "kruskal"};
 
-    
-    Graph *g = nullptr;
-    int listener; // Listening socket descriptor
-    pair<string, Graph *> ret;
     string action;
     string actualAction;
-    int m, n, weight;
-    string strat;
-    map<int, bool> connections_in_use;
+    int m, n, weight;  // n := number of vertices, m := number of edges, weight := weight of the edge
+    string strat;  // strategy for the MST
+ 
     char welcomeMsg[WELCOME_MSG_SIZE] = 
-        "Welcome to the server!\n"
+        "Welcome to the PAO-server!\n"
         "This server can perform the following actions:\n"
         "1. Create a new graph: newgraph n m where \"n\" is the number of vertices and \"m\" is the number of edges.\n"
         "2. Add an edge to the graph: newedge n m w where \"n\" and \"m\" are the vertices and \"w\" is the weight of the edge.\n"
         "3. Remove an edge from the graph: removeedge n m where \"n\" and \"m\" are the vertices.\n"
         "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim' or 'kruskal'\n";
-       
 
-    int newfd;                          // Newly accept()ed socket descriptor
+
+    int newfd;                          // Newly accepted socket descriptor
     struct sockaddr_storage remoteaddr; // Client address
     socklen_t addrlen;
-    string msg; // Buffer for server result to send
-    const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
-    const vector<string> mstStrats = {"prim", "kruskal"};
-
     char buf[256]; // Buffer for client data
-
     char remoteIP[INET6_ADDRSTRLEN];
 
     // Start off with room for 5 connections (isnt it four? because one is the listener..)
     // (We'll realloc as necessary)
-    int fd_count = 0;
     int fd_size = 5;
-    struct pollfd *pfds = (struct pollfd *)malloc(sizeof *pfds * (size_t)fd_size);
 
     // Set up and get a listening socket
-    listener = getListenerSocket();
-
-    if (listener == -1)
-    {
+    int listener = getListenerSocket();
+    if (listener == -1){
         fprintf(stderr, "error getting listening socket\n");
         exit(1);
     }
 
-    cout << "pollserver: waiting for connections..." << endl;
     // Add the listener to set
+    pfds = (struct pollfd *)malloc(sizeof *pfds * (size_t)fd_size);
     pfds[0].fd = listener;
     pfds[0].events = POLLIN; // Report ready to read on incoming connection
-
     fd_count = 1; // For the listener
+    cout << "PAO-server: waiting for connections..." << endl;
+
+    signal(SIGINT, handleSig);  // handle the CTRL+C signal
 
     // Main loop
-    for (;;)
-    {
+    while(true){
         int poll_count = poll(pfds, (size_t)fd_count, -1);
 
-        if (poll_count == -1)
-        {
+        if (poll_count == -1){
             perror("poll");
             exit(1);
         }
 
         // Run through the existing connections looking for data to read
-        for (int i = 0; i < fd_count; i++)
-        {
+        for (int i = 0; i < fd_count; i++){
 
             // Check if someone's ready to read
-            if (pfds[i].revents & POLLIN)
-            { // We got one!!
+            if (pfds[i].revents & POLLIN){ // We got one!!
 
-                if (pfds[i].fd == listener)
-                { // If listener is ready to read, handle new connection
+                if (pfds[i].fd == listener){ // If listener is ready to read, handle new connection
 
                     addrlen = sizeof remoteaddr;
                     newfd = accept(listener, (struct sockaddr *)&remoteaddr, &addrlen);
 
-                    if (newfd == -1)
-                    {
+                    if (newfd == -1){
                         perror("accept");
                     }
-                    else
-                    {
+                    else{
                         add_to_pfds(&pfds, newfd, &fd_count, &fd_size);
-                        connections_in_use[newfd] = false; // Add the new connection to the set of connections
 
-                        printf("pollserver: new connection from %s on "
-                               "socket %d\n",
-                               inet_ntop(remoteaddr.ss_family,
-                                         getInAddr((struct sockaddr *)&remoteaddr),
-                                         remoteIP, INET6_ADDRSTRLEN),
-                               newfd);
-                        if (send(newfd, welcomeMsg, sizeof(welcomeMsg), 0) < 0)
-                        {
+                        // Add the new client to the dictionary:
+                        clients_graphs[newfd].first = nullptr;
+                        clients_graphs[newfd].second = nullptr;
+
+                        printf("pollserver: new connection from %s on socket %d\n",
+                                    inet_ntop(remoteaddr.ss_family,
+                                                getInAddr((struct sockaddr *)&remoteaddr),
+                                                remoteIP, INET6_ADDRSTRLEN),
+                                    newfd);
+                        if (send(newfd, welcomeMsg, sizeof(welcomeMsg), 0) < 0){
                             perror("send");
                         }
                     }
                 }
-                else
-                { // handle existing connection
-
-                    if (connections_in_use[pfds[i].fd])
-                    { // If the connection is in use, skip it
-                        continue;
-                    }
-                    connections_in_use[pfds[i].fd] = true;             // Mark the connection as in use
+                else{ // handle existing connection 
                     int nbytes = recv(pfds[i].fd, buf, sizeof buf, 0); // receiving the msg from the client
                     int sender_fd = pfds[i].fd;
 
-                    if (nbytes <= 0)
-                    { // Got error or connection closed by client
-
+                    if (nbytes <= 0){ // Got error or connection closed by client
                         if (nbytes == 0)
                             printf("pollserver: socket %d hung up\n", sender_fd);
                         else
-                            perror("recv");
+                            perror("ERROR: receiving data from client");
 
-                        close(pfds[i].fd);
-                        del_from_pfds(pfds, i, &fd_count);
-                        connections_in_use.erase(pfds[i].fd);
+                        close(pfds[i].fd);  // close the connection 
+                        del_from_pfds(pfds, i, &fd_count);  // remove the connection from the set of connections
+                        if (clients_graphs[sender_fd].first != nullptr){  // if the client has a graph, delete it
+                            delete clients_graphs[sender_fd].first;
+                        }
+                        clients_graphs.erase(sender_fd);  // remove the client from the dictionary
                     }
-                    else
-                    {
+                    else {  // the client sent a message
                         parseInput(buf, nbytes, n, m, weight, strat, action, actualAction, graphActions, mstStrats);
-                    }
+                        cout << "Action received: " << action << " from client " << sender_fd << endl;
 
-                    cout << "Action received: " << actualAction << endl;
-                    pair<string, Graph *> result = handleInput(g, action, sender_fd, actualAction, n, m, weight, strat);
-                    string msg = result.first;
-                    if (result.second != nullptr) {
-                        g = result.second;
-                    }
-                    char *msg_buf = new char[msg.length() + 1];
-                    strcpy(msg_buf, msg.c_str());
-                    nbytes = msg.length();
-                    for (int j = 0; j < fd_count; j++) {
-                        int dest_fd = pfds[j].fd;
-                        if (dest_fd != listener && (dest_fd != sender_fd || actualAction != "message")) {
-                            if(msg.size() == 0) {
-                                continue;
-                            }
-                            if (send(dest_fd, msg_buf, (size_t)nbytes, 0) == -1) {
-                                perror("send");
+                        // handling the input:
+                        pair<string, Graph*> result = handleInput(clients_graphs[sender_fd].first, action, sender_fd, actualAction, n, m, weight, strat);
+                        //string msg = result.first;
+                        if (result.second != nullptr) {  // if the result is not null, store it in the dictionary for this client
+                            clients_graphs[sender_fd].first = result.second;
+                        }
+
+                        // print the message to the server
+                        if(actualAction == "message") {
+                            cout << result.first << endl;
+                            continue;
+                        }
+
+                        // if the actualAction is in the graphActions, then send the result to all the clients
+                        if(find(graphActions.begin(), graphActions.end(), actualAction) != graphActions.end()) {
+                            for (int j = 0; j < fd_count; j++) {
+                                int dest_fd = pfds[j].fd;
+                                if (dest_fd != listener)  // if the destination is not the listener
+                                    if (send(dest_fd, result.first.c_str(), result.first.size() + 1, 0) < 0)  // send the result to the client include the null terminator
+                                        perror("send");
                             }
                         }
                     }
-                    delete[] msg_buf;
-                    connections_in_use[sender_fd] = false;  // Mark the connection as free so the next event can be processed by main thread
-                    cout << "Connection " << sender_fd << " is now free" << endl;
-                    msg = "";
                 }
             } // END handle data from client
         } // END got ready-to-read from poll()

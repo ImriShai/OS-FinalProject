@@ -5,5 +5,5 @@
 class Prim : public MST_Strategy
 {
 public:
-    Graph operator()(Graph *g);
+    Graph* operator()(Graph *g);
 };

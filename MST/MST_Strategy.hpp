@@ -4,6 +4,6 @@
 class MST_Strategy
 {
 public:
-    virtual Graph operator()(Graph *g) = 0;
+    virtual Graph* operator()(Graph *g) = 0;
     virtual ~MST_Strategy() = default;
 };

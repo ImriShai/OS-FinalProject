@@ -1,5 +1,5 @@
 # Compiler
-CC = clang++
+CC = g++
 
 # Compiler flags
 CFLAGS = -std=c++17 -Werror -Wsign-conversion
@@ -11,17 +11,16 @@ MSTSrc = $(wildcard MST/*.cpp)
 DATASTRUCTSrc = $(wildcard DataStruct/*.cpp)
 UTILSrc = $(wildcard ServerUtils/*.cpp)
 
-serverSrc = Server.cpp
+
 lf-serverSrc = LF-Server.cpp LFP/LFP.cpp 
 PAO = PAO-server.cpp PAO/PAO.cpp
 
 
 # Object files
-OBJ = $(graphSrc:.cpp=.o) $(serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o) $(UTILSrc:.cpp=.o)
 LF-OBJ = $(graphSrc:.cpp=.o) $(lf-serverSrc:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o) $(UTILSrc:.cpp=.o)
 PAO-OBJ = $(graphSrc:.cpp=.o) $(PAO:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.cpp=.o) $(UTILSrc:.cpp=.o)
 
-.PHONY: all server pao-server valgrind clean
+.PHONY: all  pao-server valgrind clean
 all: lf-server pao-server 
 
 # Memory check using valgrind
@@ -29,8 +28,6 @@ valgrind: server
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo <demoInput.txt 2>&1 | { egrep -i "HEAP|at exit" || true; } 	
 
 # Build target
-server: $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
 
 lf-server: $(LF-OBJ)
 	$(CC) $(CFLAGS) $(LF-OBJ)  -o lf-server

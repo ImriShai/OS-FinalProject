@@ -19,7 +19,7 @@ MST_Factory *MST_Factory::getInstance()
     return instance;
 }
 
-MST_Strategy *MST_Factory::createMST(std::string type)
+MST_Strategy* MST_Factory::createMST(std::string type)
 {
     if(strats.find(type) != strats.end())
     {
@@ -37,7 +37,7 @@ void MST_Factory::cleanUp()
         for (auto &strat : strats)
         {
             delete strat.second;
-            strat.second = nullptr;
+            //strat.second = nullptr;
         }
     }
 }

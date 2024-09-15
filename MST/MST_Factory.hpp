@@ -10,10 +10,10 @@ class MST_Factory
     private:
     MST_Factory() = default;
     ~MST_Factory() = default;
-    static MST_Factory* instance;
-    MST_Factory(const MST_Factory&) = delete;
-    MST_Factory& operator=(const MST_Factory&) = delete;
-    static std::map<std::string, MST_Strategy*> strats;
+    static MST_Factory* instance;  // Singleton instance
+    MST_Factory(const MST_Factory&) = delete;  // No copy constructor
+    MST_Factory& operator=(const MST_Factory&) = delete;  // No copy assignment
+    static std::map<std::string, MST_Strategy*> strats;  // Map to store the strategies
     static void cleanUp();
    
 public:

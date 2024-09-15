@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "vertex.hpp"
+#include <iostream>
 
 
 class Edge
@@ -47,7 +48,11 @@ public:
 
     //Less than operator
     bool operator<(const Edge &other) const;
-};
+
+    friend std::ostream &operator<<(std::ostream &os, const Edge &e);
+
+    };
+
 
 
 // Hash function for the Edge class, used in unordered_set

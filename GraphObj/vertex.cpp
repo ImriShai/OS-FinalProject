@@ -74,3 +74,9 @@ Vertex &Vertex::operator=(const Vertex &other)
         }
         return *this;
     }
+
+std::ostream& operator<<(std::ostream &os, const Vertex &v)
+{
+    os << "Vertex " << v.getId();
+    return os;
+}
