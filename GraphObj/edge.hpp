@@ -49,6 +49,9 @@ public:
     //Less than operator
     bool operator<(const Edge &other) const;
 
+    //greater than operator for priority queue
+    bool operator>(const Edge &other) const;
+
     friend std::ostream &operator<<(std::ostream &os, const Edge &e);
 
     };

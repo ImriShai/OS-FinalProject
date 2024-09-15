@@ -48,10 +48,6 @@ public:
     //Copy constructor with option to not copy edges
     Graph(const Graph &other, bool copyEdges = false);
 
-
-    // Get the maximum degree of the graph
-    size_t maxDegree() const;
-
     // Get the number of vertices in the graph
     size_t numVertices() const;
     // Check if the graph has a vertex
@@ -60,12 +56,6 @@ public:
     std::unordered_set<Edge>::iterator edgesBegin();
     // Get an iterator for the end of edges in the graph
     std::unordered_set<Edge>::iterator edgesEnd();
-
-    // Add a vertex and all its edges to the graph
-    void addVertexWithEdges(Vertex v);
-
-    // Remove a vertex from the graph
-    void removeVertexWithEdges(Vertex v);
 
     // Add an edge to the graph, the edge is directed from start to end
     void addEdge(Edge e);

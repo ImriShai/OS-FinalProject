@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <map>
 
 class Edge;
 
@@ -19,6 +20,9 @@ private:
 
     // List to store the edges connected to the vertex
     std::vector<Edge> edges;
+
+    // <neighbour, weight to the neighbour>
+    std::map<size_t,size_t> adj;
 
 public:
     // Constructor to create a vertex with a given ID
@@ -50,6 +54,15 @@ public:
     std::vector<Edge>::iterator begin();
     std::vector<Edge>::iterator end();
 
+    const std::map<size_t,size_t>& getAdj() const;
+    std::map<size_t,size_t>& getAdj();
+
+    //iterator for the adj map
+    std::map<size_t,size_t>::iterator adjBegin();
+
+    std::map<size_t,size_t>::iterator adjEnd();
+
+
     // Check if the vertex has an edge connecting to a specific target vertex
     bool hasEdge(Vertex target) const;
 
@@ -64,6 +77,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Vertex &v);
+   
 };
 
 namespace std

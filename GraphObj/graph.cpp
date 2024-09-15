@@ -66,6 +66,8 @@ Graph::Graph(const Graph &other, bool copyEdges) : vertices(), edges(), distance
         {
             edges.insert(e);
         }
+
+
         // Copy all distances:
         if (other.distances.size() != 0)
         {
@@ -102,20 +104,12 @@ Graph::Graph(const Graph &other, bool copyEdges) : vertices(), edges(), distance
         for (auto &pair : vertices)
         {
             pair.second.removeAllEdges();
+            pair.second.getAdj().clear();
         }
     }
 }
 
-// Get the maximum degree of the graph
-size_t Graph::maxDegree() const
-{
-    int maxDeg = -1;
-    for (const auto &pair : vertices)
-    {
-        maxDeg = std::max(maxDeg, pair.second.degree());
-    }
-    return (size_t)(maxDeg);
-}
+
 
 // Get the number of vertices in the graph
 size_t Graph::numVertices() const
@@ -141,41 +135,18 @@ std::unordered_set<Edge>::iterator Graph::edgesEnd()
     return edges.end();
 }
 
-// Add a vertex and all its edges to the graph
-void Graph::addVertexWithEdges(Vertex v)
-{
-   cleanDistParent();
 
-    if (vertices.find(v.getId()) != vertices.end())
-        return;
-    vertices[v.getId()] = v;
-    for (Edge e : v)
-    {
-        if (vertices.find(e.getOther(v).getId()) != vertices.end())
-            edges.insert(e);
-    }
-}
 
-// Remove a vertex from the graph
-void Graph::removeVertexWithEdges(Vertex v)
-{
-    cleanDistParent();
-    
-    if (vertices.find(v.getId()) == vertices.end())
-        return;
-    vertices.erase(v.getId());
-    for (Edge &e : v)
-    {
-        edges.erase(e);
-    }
-}
+
 
 // Add an edge to the graph, the edge is directed from start to end
 void Graph::addEdge(Edge e)
 {
     cleanDistParent();
-
     vertices[e.getStart().getId()].addEdge(e);
+    vertices[e.getEnd().getId()].addEdge(e);
+    vertices[e.getStart().getId()].getAdj()[e.getOther(vertices[e.getStart().getId()]).getId()] = e.getWeight();
+    vertices[e.getEnd().getId()].getAdj()[e.getOther(vertices[e.getEnd().getId()]).getId()] = e.getWeight();
     edges.insert(e);
 }
 
@@ -183,18 +154,18 @@ void Graph::addEdge(Edge e)
 void Graph::removeEdge(Edge e)
 {
     cleanDistParent();
-
     vertices[e.getStart().getId()].removeEdge(e);
+    vertices[e.getEnd().getId()].removeEdge(e);
+    vertices[e.getStart().getId()].getAdj().erase(e.getOther(vertices[e.getStart().getId()]).getId());
+    vertices[e.getEnd().getId()].getAdj().erase(e.getOther(vertices[e.getEnd().getId()]).getId());
     edges.erase(e);
+
 }
 
 void Graph::addEdge(Vertex &start, Vertex &end, size_t weight)
 {
-   cleanDistParent();
-
     Edge e(start, end, weight);
     addEdge(e);
-    e.getStart().addEdge(e);
 }
 
 // Get an iterator for the vertices in the graph

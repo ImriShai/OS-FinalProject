@@ -121,7 +121,7 @@ int main(void)
         exit(1);
     }
 
-    cout << "pollserver: waiting for connections..." << endl;
+    cout << "LF- waiting for connections..." << endl;
     // Add the listener to set
     pfds[0].fd = listener;
     pfds[0].events = POLLIN; // Report ready to read on incoming connection
@@ -158,7 +158,7 @@ int main(void)
                         // Add the new client to the dictionary:
                         clients_graphs[newfd]= nullptr;
 
-                        printf("pollserver: new connection from %s on socket %d\n",
+                        printf("LF-server new connection from %s on socket %d\n",
                                     inet_ntop(remoteaddr.ss_family,
                                                 getInAddr((struct sockaddr *)&remoteaddr),
                                                 remoteIP, INET6_ADDRSTRLEN),
@@ -174,7 +174,7 @@ int main(void)
 
                     if (nbytes <= 0){ // Got error or connection closed by client
                         if (nbytes == 0)
-                            printf("pollserver: socket %d hung up\n", sender_fd);
+                            printf("LF-server: socket %d hung up\n", sender_fd);
                         else
                             perror("ERROR: receiving data from client");
 

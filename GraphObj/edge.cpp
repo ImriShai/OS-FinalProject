@@ -53,6 +53,11 @@ bool Edge::operator==(const Edge &other) const
         return weight < other.weight;
     }
 
+    bool Edge::operator>(const Edge &other) const
+    {
+        return weight > other.weight;
+    }
+
 std::ostream& operator<<(std::ostream &os, const Edge &e)
 {
     os << e.start << " -- " << e.end << " (" << e.weight << ")";

@@ -24,12 +24,14 @@ void Vertex::addEdge(Edge e)
 void Vertex::removeEdge(Edge e)
 {
     edges.erase(std::remove(edges.begin(), edges.end(), e), edges.end());
+    adj.erase(e.getOther(*this).getId());
 }
 
 //Remove all edges from the vertex
 void Vertex::removeAllEdges()
 {
     edges.clear();
+    adj.clear();
 }
 
 // Get the degree of the vertex (number of edges)
@@ -46,6 +48,27 @@ std::vector<Edge>::iterator Vertex::begin()
 std::vector<Edge>::iterator Vertex::end()
 {
     return edges.end();
+}
+
+const std::map<size_t, size_t> &Vertex::getAdj() const
+{
+    return adj;
+}
+
+std::map<size_t, size_t> &Vertex::getAdj()
+{
+    return adj;
+}
+
+//iterator for the adj map
+std::map<size_t, size_t>::iterator Vertex::adjBegin()
+{
+    return adj.begin();
+}
+
+std::map<size_t, size_t>::iterator Vertex::adjEnd()
+{
+    return adj.end();
 }
 
 // Check if the vertex has an edge connecting to a specific target vertex

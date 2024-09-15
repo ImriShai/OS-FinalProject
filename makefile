@@ -8,7 +8,7 @@ VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 # Source files
 graphSrc = $(wildcard GraphObj/*.cpp)
 MSTSrc = $(wildcard MST/*.cpp)
-DATASTRUCTSrc = $(wildcard DataStruct/*.cpp)
+DATASTRUCTSrc = $(wildcard DataStruct/*.cpp) DataStruct/BinaryHeap.hpp
 UTILSrc = $(wildcard ServerUtils/*.cpp)
 
 
@@ -41,4 +41,4 @@ pao-server: $(PAO-OBJ)
 
 # Clean build files
 clean:
-	rm -f *.o server GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server
+	rm -f *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
