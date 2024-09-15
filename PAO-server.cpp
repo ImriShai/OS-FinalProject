@@ -132,7 +132,7 @@ int main(void) {
     pao = make_unique<PAO>(functions);  // create a new PAO object with the functions
     pao->start();  // start the PAO object (start the threads). no need to stop it because it will be stopped in the destructor.
     const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
-    const vector<string> mstStrats = {"prim", "kruskal"};
+    const vector<string> mstStrats = {"prim", "kruskal", "tarjan", "boruvka"};
 
     string action;
     string actualAction;

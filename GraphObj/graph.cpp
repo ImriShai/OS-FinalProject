@@ -117,6 +117,12 @@ size_t Graph::numVertices() const
     return vertices.size();
 }
 
+// Get the number of edges in the graph
+size_t Graph::numEdges() const
+{
+    return edges.size();
+}
+
 // Check if the graph has a vertex
 bool Graph::hasVertex(Vertex v) const
 {

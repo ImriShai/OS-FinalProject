@@ -200,7 +200,7 @@ std::pair<std::string, Graph *> handleInput(Graph *g, std::string action, int cl
     }
     else
     {
-        msg = "Client " + std::to_string(clientFd) + " sent a message:" + action;
+        msg = "Client " + std::to_string(clientFd) + " sent a message: " + action;
         return {msg, nullptr};
     }
 }

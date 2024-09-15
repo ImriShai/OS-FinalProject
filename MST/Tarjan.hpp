@@ -6,7 +6,7 @@
 #include <limits>
 #include <memory>
 
-class KKT: public MST_Strategy
+class Tarjan: public MST_Strategy
 {
     public:
         Graph* operator()(Graph *g);

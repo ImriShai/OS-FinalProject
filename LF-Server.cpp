@@ -86,7 +86,7 @@ int main(void)
 {
     lfp.start();          // Start the threads in LFP
     const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
-    const vector<string> mstStrats = {"prim", "kruskal"};
+    const vector<string> mstStrats = {"prim", "kruskal", "tarjan", "boruvka"};
 
     string action;
     string actualAction;

@@ -50,6 +50,8 @@ public:
 
     // Get the number of vertices in the graph
     size_t numVertices() const;
+    // Get the number of edges in the graph
+    size_t numEdges() const;
     // Check if the graph has a vertex
     bool hasVertex(Vertex v) const;
     // Get an iterator for the start of edges in the graph

@@ -1,11 +1,10 @@
 #include "Tarjan.hpp"
 
-
-// The () operator implements the KKT algorithm to find the MST
-Graph* KKT::operator()(Graph *g)
+// The () operator implements the Kruskal's algorithm to find the MST
+Graph* Tarjan::operator()(Graph *g)
 {
-    // Create a new graph to store the MST
-    Graph* mst = new Graph();
+    // Create a new graph to store the MST with the same vertices as the original graph but no edges
+    Graph* mst = new Graph(*g, false);
 
     // Extract edges from the original graph and sort them by weight
     std::vector<Edge> edges(g->edgesBegin(), g->edgesEnd());
@@ -23,17 +22,17 @@ Graph* KKT::operator()(Graph *g)
 
     // Find function to find the root of a vertex
     std::function<int(int)> find = [&parent, &find](int v) {
-        if (parent[v] == v)
+        if (parent[(size_t)v] == v)
             return v;
-        return parent[v] = find(parent[v]);
+        return parent[(size_t)v] = find(parent[(size_t)v]);
     };
 
     // Union function to unite two subsets
     auto unionSets = [&parent, &find](int u, int v) {
-        int rootU = find(u);
-        int rootV = find(v);
+        int rootU = find((size_t)u);
+        int rootV = find((size_t)v);
         if (rootU != rootV)
-            parent[rootU] = rootV;
+            parent[(size_t)rootU] = rootV;
     };
 
     // Iterate through the edges in sorted order
@@ -50,11 +49,10 @@ Graph* KKT::operator()(Graph *g)
         }
 
         // Stop if we have added V - 1 edges to the MST
-        if (mst->numVertices() == V - 1)
+        if (mst->numEdges() == V - 1)
             break;
     }
 
     // Return the MST
     return mst;
 }
-
