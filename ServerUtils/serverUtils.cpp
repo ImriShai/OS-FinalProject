@@ -9,6 +9,17 @@ std::string toLowerCase(std::string s)
     return s;
 }
 
+bool isNumber(const std::vector<std::string> &s)
+{
+    for(size_t i = 1; i < s.size(); i++){
+        std::string str = s[i];
+        if(!std::all_of(str.begin(), str.end(), ::isdigit)){
+            return false;
+        }
+    }
+    return true;
+}
+
 void initGraph(Graph *g, int m, int clientFd)
 {
     std::string msg = "To create an edge u->v with weight w please enter the edge number in the format: u v w \n";
@@ -43,6 +54,7 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
 
 void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string &strat, std::string &action, std::string &actualAction, const std::vector<std::string> &graphActions, const std::vector<std::string> &mstStrats)
 {
+    
     buf[nbytes] = '\0';
     action = toLowerCase(std::string(buf));
     std::vector<std::string> tokens = splitStringBySpaces(action);
@@ -77,6 +89,9 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
             }
         }
     }
+    else if(!isNumber(tokens)){
+        actualAction = "message";
+    }
     else if (actualAction == "newgraph")
     {
         n = stoi(tokens[1]);
@@ -95,7 +110,11 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
         m = stoi(tokens[2]);
         weight = -1;
     }
-}
+    }
+
+
+
+
 
 std::unordered_set<Vertex> initVertices(int n)
 {

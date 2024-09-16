@@ -88,6 +88,7 @@ void handleSig(int sig) {
     }
     free(pfds);
     cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
+    exit(0);
 }
 
  

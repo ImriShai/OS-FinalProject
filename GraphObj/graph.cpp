@@ -165,6 +165,7 @@ void Graph::removeEdge(Edge e)
     vertices[e.getStart().getId()].getAdj().erase(e.getOther(vertices[e.getStart().getId()]).getId());
     vertices[e.getEnd().getId()].getAdj().erase(e.getOther(vertices[e.getEnd().getId()]).getId());
     edges.erase(e);
+    edges.erase(Edge(e.getEnd(),e.getStart(),e.getWeight()));
 
 }
 

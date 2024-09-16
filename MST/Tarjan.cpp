@@ -52,6 +52,12 @@ Graph* Tarjan::operator()(Graph *g)
         if (mst->numEdges() == V - 1)
             break;
     }
+    //Cache the distance and parent matrices of the MST for future use
+    std::vector<std::vector<size_t>> dist, per;
+    std::tie(dist, per) = mst->floydWarshall(); // Get the distance and parent matrices of the MST
+    // Update distance and parent matrices in mst
+    mst->setDistances(dist);
+    mst->setParent(per); 
 
     // Return the MST
     return mst;
