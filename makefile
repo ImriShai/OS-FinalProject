@@ -3,7 +3,9 @@ CC = g++
 
 # Compiler flags
 CFLAGS = -std=c++17 -Werror -Wsign-conversion
-VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
+MEMCHECK_FLAGS = -v --leak-check=full --show-leak-kinds=all --error-exitcode=99
+CACHEGRIND_FLAGS = -v --error-exitcode=99
+HELGRIND_FLAGS = -v --error-exitcode=99
 
 # Source files
 graphSrc = $(wildcard GraphObj/*.cpp)
@@ -23,9 +25,54 @@ PAO-OBJ = $(graphSrc:.cpp=.o) $(PAO:.cpp=.o) $(MSTSrc:.cpp=.o) $(DATASTRUCTSrc:.
 .PHONY: all  pao-server valgrind clean
 all: lf-server pao-server 
 
-# Memory check using valgrind
-valgrind: server 
-	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo <demoInput.txt 2>&1 | { egrep -i "HEAP|at exit" || true; } 	
+# Valgrind tools: we will check creating 3 graphs and 3 MSTs
+# LF - Memory check:
+lf-memcheck: lf-server
+	@echo "Starting lf-server with Valgrind memcheck..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=memcheck $(MEMCHECK_FLAGS ) ./lf-server 2>&1 | tee Valgrind-reports/lf-server_memcheck.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# LF - CacheGrind:
+lf-cachegrind: lf-server
+	@echo "Starting lf-server with Valgrind cachegrind..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=cachegrind $(CACHEGRIND_FLAGS) ./lf-server 2>&1 | tee Valgrind-reports/lf-server_cachegrind.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# LF  - Helgrind:
+lf-helgrind: lf-server
+	@echo "Starting lf-server with Valgrind helgrind..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=helgrind $(HELGRIND_FLAGS) ./lf-server 2>&1 | tee Valgrind-reports/lf-server_helgrind.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# PAO - Memory check:
+pao-memcheck: pao-server
+	@echo "Starting pao-server with Valgrind memcheck..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=memcheck $(MEMCHECK_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_memcheck.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# PAO - CacheGrind for pao-server:
+pao-cachegrind: pao-server
+	@echo "Starting pao-server with Valgrind cachegrind..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=cachegrind $(CACHEGRIND_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_cachegrind.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# PAO - Helgrind for pao-server:
+pao-helgrind: pao-server
+	@echo "Starting pao-server with Valgrind helgrind..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=helgrind $(HELGRIND_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_helgrind.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
 
 # Build target
 

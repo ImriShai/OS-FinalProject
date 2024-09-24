@@ -13,6 +13,9 @@ bool isNumber(const std::vector<std::string> &s)
 {
     for(size_t i = 1; i < s.size(); i++){
         std::string str = s[i];
+        if(str.empty()){
+            return false;
+        }
         if(!std::all_of(str.begin(), str.end(), ::isdigit)){
             return false;
         }

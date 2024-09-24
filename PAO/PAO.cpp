@@ -19,6 +19,7 @@ PAO::PAO(const std::vector<std::function<void(void*)>>& functions): stopFlag(fal
 }
 
 PAO::~PAO() {
+
     stop();  // stop the threads
 
     // going over all the workers and deleting the threads, mutexes and condition variables
@@ -57,6 +58,7 @@ void PAO::start() {
 void PAO::stop() {
     stopFlag = true;
     for (auto& worker : workers) {
+        lock_guard<mutex> lock(*worker.queueMutex);
         worker.condition->notify_all();
         if (worker.thread->joinable()) {
             worker.thread->join();

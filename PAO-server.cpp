@@ -28,7 +28,7 @@
 #include <atomic>
 
 #define PORT "9036"   // Port we're listening on
-#define WELCOME_MSG_SIZE 480
+#define WELCOME_MSG_SIZE 510
 
 using namespace std;
 
@@ -54,6 +54,7 @@ unique_ptr<PAO> pao = nullptr; // unique pointer to the PAO object
  */
 std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat)
 {
+    Graph* tmp = new Graph(*g,true);  // create a copy of the graph
     clients_graphs[clientFd].second = new Triple{g, strat, clientFd};  // creating a new triple on the heap := {&g, strat, clientFd}. it will be deleted in the last function
     pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
 
@@ -146,7 +147,7 @@ int main(void) {
         "1. Create a new graph: newgraph n m where \"n\" is the number of vertices and \"m\" is the number of edges.\n"
         "2. Add an edge to the graph: newedge n m w where \"n\" and \"m\" are the vertices and \"w\" is the weight of the edge.\n"
         "3. Remove an edge from the graph: removeedge n m where \"n\" and \"m\" are the vertices.\n"
-        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim' or 'kruskal'\n";
+        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim', 'kruskal', 'tarjan' or 'boruvka'\n";
 
 
     int newfd;                          // Newly accepted socket descriptor

@@ -28,7 +28,7 @@
 
 #define NUM_THREADS 4 // Number of threads in LFP
 #define PORT "9036"   // Port we're listening on
-#define WELCOME_MSG_SIZE 480
+#define WELCOME_MSG_SIZE 510
 
 using namespace std;
 
@@ -40,16 +40,17 @@ int fd_count = 0;
 
 pair<string, Graph *> MST(Graph *g, int clientFd, const string &strat) // many to do here
 {
+    
+    // Perform the operation
+    Graph *mst = (*MST_Factory::getInstance()->createMST(strat))(g); // the strategy will create a new graph and return a pointer to it
     // implementing Leader-Follower with global variable "lfp":
-    lfp.addTask([clientFd, strat, g]()
+    lfp.addTask([clientFd, strat, mst]()
                 {
-                    // Perform the operation
                     string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
                     msg += "MST Strategy: " + strat + "\n";
-                    Graph *mst = (*MST_Factory::getInstance()->createMST(strat))(g); // the strategy will create a new graph and return a pointer to it
                     msg += "MSTs' stats: \n" + mst->stats();
                     send(clientFd, msg.c_str(), msg.size(), 0);
-                    cout << "User " << clientFd << "succesfuly finished finding MST of the Graph" << endl;
+                    //cout << "User " << clientFd << "succesfuly finished finding MST of the Graph" << endl;
                     delete mst; // deleting the mst graph
                 });
     return {"", nullptr};
@@ -106,7 +107,7 @@ int main(void)
         "1. Create a new graph: newgraph n m where \"n\" is the number of vertices and \"m\" is the number of edges.\n"
         "2. Add an edge to the graph: newedge n m w where \"n\" and \"m\" are the vertices and \"w\" is the weight of the edge.\n"
         "3. Remove an edge from the graph: removeedge n m where \"n\" and \"m\" are the vertices.\n"
-        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim' or 'kruskal'\n";
+        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim', 'kruskal', 'tarjan' or 'boruvka'\n";
 
     int newfd;                          // Newly accept()ed socket descriptor
     struct sockaddr_storage remoteaddr; // Client address

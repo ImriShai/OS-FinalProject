@@ -18,6 +18,7 @@ class LFP {
         vector<int> threadIDs;  // Vector to store thread IDs
         queue<function<void()>> taskQueue;  // Queue to store tasks
         mutex queueMutex;  // Mutex to protect the tasks queue
+        mutex stopMutex;  // Mutex to protect the stop flag
         condition_variable condition;  // used to notify the threads that there is a task in the queue
         bool stopFlag;  // Flag to stop the threads if set to true
     public:

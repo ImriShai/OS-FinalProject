@@ -19,5 +19,4 @@ class MST_Factory
 public:
     static MST_Strategy* createMST(std::string type);
     static MST_Factory* getInstance();
-    
 };

@@ -1,0 +1,36 @@
+==24193== Memcheck, a memory error detector
+==24193== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==24193== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==24193== Command: ./lf-server
+==24193== 
+LF- waiting for connections...
+==24193== Conditional jump or move depends on uninitialised value(s)
+==24193==    at 0x1221D9: main (in /home/ido/Course-OperationSystems/OS-FinalProject/lf-server)
+==24193== 
+LF-server new connection from 127.0.0.1 on socket 4
+Action received: newgraph 1 0
+ from client 4
+Creating a new graph with 1 vertices and 0 edges
+Graph created successfully
+Action received: mst from client 4
+
+LF-server: cleaning up resources...
+LF-server: Graphs freed,
+LF-server: Clients freed,
+Good Bye!
+==24193== 
+==24193== HEAP SUMMARY:
+==24193==     in use at exit: 256 bytes in 2 blocks
+==24193==   total heap usage: 110 allocs, 108 frees, 90,713 bytes allocated
+==24193== 
+==24193== LEAK SUMMARY:
+==24193==    definitely lost: 0 bytes in 0 blocks
+==24193==    indirectly lost: 0 bytes in 0 blocks
+==24193==      possibly lost: 0 bytes in 0 blocks
+==24193==    still reachable: 256 bytes in 2 blocks
+==24193==         suppressed: 0 bytes in 0 blocks
+==24193== Rerun with --leak-check=full to see details of leaked memory
+==24193== 
+==24193== Use --track-origins=yes to see where uninitialised values come from
+==24193== For lists of detected and suppressed errors, rerun with: -s
+==24193== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

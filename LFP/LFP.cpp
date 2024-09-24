@@ -14,25 +14,32 @@ LFP::~LFP() {
 }
 
 void LFP::addTask(function<void()> task) {
-    cout << "Adding task to the LFP queue\n" << endl;
+    // cout << "Adding task to the LFP queue\n" << endl;
     {
         lock_guard<mutex> lock(queueMutex);  // Lock the mutex
         taskQueue.push(task);  // Add the task to the queue
+        condition.notify_one();  // Notify one of the threads
     }
-    condition.notify_one();  // Notify one of the threads
 }
 
 
 void LFP::start() {
-    stopFlag = false;  
+    {
+        lock_guard<mutex> lock(stopMutex);  // Lock the mutex
+        stopFlag = false;  
+    }
 }
 
 void LFP::stop() {
     {
-        lock_guard<mutex> lock(queueMutex);  // Lock the mutex
+        lock_guard<mutex> lock(stopMutex);  // Lock the mutex
         stopFlag = true;
     }
-    condition.notify_all();
+    
+    {
+        lock_guard<mutex> lock(queueMutex);
+        condition.notify_all();
+    }
     for (thread &thread : threads) {
         if (thread.joinable()) {
             thread.join();  // Join the threads
@@ -45,12 +52,18 @@ void LFP::worker(int id) {
         function<void()> task;  // Task to be executed
         {
             unique_lock<mutex> lock(queueMutex);
-            condition.wait(lock, [this]() { return stopFlag || !taskQueue.empty(); });
-            if (stopFlag && taskQueue.empty()) return;
+            condition.wait(lock, [this]() { 
+                lock_guard<mutex> stopLock(stopMutex);  // Lock the stop mutex
+                return stopFlag || !taskQueue.empty(); 
+            });
+            {
+                lock_guard<mutex> stopLock(stopMutex);  // Lock the stop mutex
+                if (stopFlag && taskQueue.empty()) return;
+            }
             task = taskQueue.front();
             taskQueue.pop();
         }
-        std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
+        //std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
         task();  // Execute the task
         
     }
