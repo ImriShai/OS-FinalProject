@@ -1,566 +1,156 @@
-==22757== Helgrind, a thread error detector
-==22757== Copyright (C) 2007-2017, and GNU GPL'd, by OpenWorks LLP et al.
-==22757== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
-==22757== Command: ./pao-server
-==22757== 
---22757-- Valgrind options:
---22757--    --tool=helgrind
---22757--    -v
---22757--    --error-exitcode=99
---22757-- Contents of /proc/version:
---22757--   Linux version 6.8.0-45-generic (buildd@lcy02-amd64-075) (x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2
---22757-- 
---22757-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3
---22757-- Page sizes: currently 4096, max supported 4096
---22757-- Valgrind library directory: /usr/libexec/valgrind
-==22757== helgrind --delta-stacktrace=yes only works with --vex-guest-chase=no
-==22757== => (re-setting it to 'no')
---22757-- Reading syms from /home/ido/Course-OperationSystems/OS-FinalProject/pao-server
---22757-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
---22757--   Considering /usr/lib/debug/.build-id/41/86944c50f8a32b47d74931e3f512b811813b64.debug ..
---22757--   .. build-id is valid
---22757-- Reading syms from /usr/libexec/valgrind/helgrind-amd64-linux
---22757--    object doesn't have a symbol table
---22757--    object doesn't have a dynamic symbol table
---22757-- Scheduler: using generic scheduler lock implementation.
---22757-- Reading suppressions file: /usr/libexec/valgrind/default.supp
-==22757== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-22757-by-ido-on-???
-==22757== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-22757-by-ido-on-???
-==22757== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-22757-by-ido-on-???
-==22757== 
-==22757== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==22757== don't want to do, unless you know exactly what you're doing,
-==22757== or are doing some strange experiment):
-==22757==   /usr/bin/vgdb --pid=22757 ...command...
-==22757== 
-==22757== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==22757==   /path/to/gdb ./pao-server
-==22757== and then give GDB the following command
-==22757==   target remote | /usr/bin/vgdb --pid=22757
-==22757== --pid is optional if only one valgrind process is running
-==22757== 
---22757-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
---22757--    object doesn't have a symbol table
---22757-- Reading syms from /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
---22757--    object doesn't have a symbol table
---22757-- REDIR: 0x4027220 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4856720 (strcmp)
---22757-- REDIR: 0x402aa40 (ld-linux-x86-64.so.2:strlen) redirected to 0x4855c20 (strlen)
---22757-- REDIR: 0x402afa0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x48598f0 (mempcpy)
---22757-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
---22757--    object doesn't have a symbol table
---22757-- Reading syms from /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
---22757--    object doesn't have a symbol table
---22757-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
---22757--   Considering /usr/lib/debug/.build-id/49/0fef8403240c91833978d494d39e537409b92e.debug ..
---22757--   .. build-id is valid
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
---22757--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
---22757--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552d0 sem_post@*
---22757--     new: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552c0 sem_post
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552b0 sem_wait@*
---22757--     new: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552a0 sem_wait
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---22757--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---22757--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---22757--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
-==22757== WARNING: new redirection conflicts with existing -- ignoring it
---22757--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---22757--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
---22757-- Reading syms from /usr/lib/x86_64-linux-gnu/libm.so.6
---22757--   Considering /usr/lib/debug/.build-id/a5/08ec5d8bf12fb7fd08204e0f87518e5cd0b102.debug ..
---22757--   .. build-id is valid
---22757-- REDIR: 0x4b69720 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b699e0 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b692e0 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b87cd0 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a6d0 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b86540 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6ac10 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b86370 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69260 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69960 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a5a0 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b863f0 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a9e0 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b869b0 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69830 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6aa70 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69420 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b86470 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b691d0 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6ab60 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a480 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b72570 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6c010 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69390 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6ab10 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b696a0 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b698d0 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a950 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a3f0 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b69b00 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6a7d0 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6aac0 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b6bf80 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---22757-- REDIR: 0x4b7b650 (libc.so.6:__strrchr_sse2) redirected to 0x4855820 (__strrchr_sse2)
---22757-- REDIR: 0x4b660a0 (libc.so.6:malloc) redirected to 0x484a8a0 (malloc)
---22757-- REDIR: 0x4b7b950 (libc.so.6:__strlen_sse2) redirected to 0x4855b60 (__strlen_sse2)
---22757-- REDIR: 0x4c63b30 (libc.so.6:__memcmp_sse4_1) redirected to 0x4858750 (__memcmp_sse4_1)
---22757-- REDIR: 0x4b85870 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4856850 (memcpy@GLIBC_2.2.5)
---22757-- REDIR: 0x4923970 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x484b020 (operator new(unsigned long))
---22757-- REDIR: 0x4921c20 (libstdc++.so.6:operator delete(void*, unsigned long)) redirected to 0x484db80 (operator delete(void*, unsigned long))
---22757-- REDIR: 0x4b55c40 (libc.so.6:pthread_create@@GLIBC_2.34) redirected to 0x4854890 (pthread_create@*)
---22757-- REDIR: 0x4b67520 (libc.so.6:calloc) redirected to 0x484fa50 (calloc)
---22757-- REDIR: 0x4b58ef0 (libc.so.6:pthread_mutex_lock@@GLIBC_2.2.5) redirected to 0x4854cb0 (pthread_mutex_lock)
---22757-- REDIR: 0x4b5aa70 (libc.so.6:pthread_mutex_unlock@@GLIBC_2.2.5) redirected to 0x4854ce0 (pthread_mutex_unlock)
---22757-- REDIR: 0x4b54830 (libc.so.6:pthread_cond_wait@@GLIBC_2.3.2) redirected to 0x4854cf0 (pthread_cond_wait@*)
---22757-- REDIR: 0x4b85f60 (libc.so.6:__memset_sse2_unaligned) redirected to 0x4858aa0 (memset)
---22757-- REDIR: 0x4b663e0 (libc.so.6:free) redirected to 0x484d290 (free)
---22757-- REDIR: 0x4b69fc0 (libc.so.6:__GI_strstr) redirected to 0x4859a60 (__strstr_sse2)
---22757-- REDIR: 0x4b75880 (libc.so.6:__memchr_sse2) redirected to 0x48567a0 (memchr)
---22757-- REDIR: 0x4b7b210 (libc.so.6:__strchr_sse2) redirected to 0x4855940 (__strchr_sse2)
---22757-- REDIR: 0x4b66740 (libc.so.6:realloc) redirected to 0x484fcd0 (realloc)
---22757-- REDIR: 0x4b85850 (libc.so.6:__mempcpy_sse2_unaligned) redirected to 0x4859770 (mempcpy)
-PAO-server: waiting for connections...
---22757-- REDIR: 0x4b7b440 (libc.so.6:__strchrnul_sse2) redirected to 0x4859660 (strchrnul)
---22757-- REDIR: 0x4b80890 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4855c50 (strcpy)
-pollserver: new connection from 127.0.0.1 on socket 4
-Action received: newgraph 3 3
- from client 4
-Creating a new graph with 3 vertices and 3 edges
---22757-- REDIR: 0x4921c10 (libstdc++.so.6:operator delete(void*)) redirected to 0x484d8c0 (operator delete(void*))
-Graph created successfully
-Action received: mst from client 4
---22757-- REDIR: 0x4b54220 (libc.so.6:pthread_cond_signal@@GLIBC_2.3.2) redirected to 0x4854d10 (pthread_cond_signal@*)
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #1 is the program's root thread
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #1: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x128CEF: PAO::addTask(void*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121781: MST(Graph*, int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x13CFFF: handleInput(Graph*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, int, int, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x122B60: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #2 was created
-==22757==    at 0x4BE69F3: clone (clone.S:76)
-==22757==    by 0x4BE78EE: __clone_internal (clone-internal.c:83)
-==22757==    by 0x4B556D8: create_thread (pthread_create.c:295)
-==22757==    by 0x4B561FF: pthread_create@@GLIBC_2.34 (pthread_create.c:828)
-==22757==    by 0x4853767: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4951328: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x129D95: std::thread::thread<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*&, void>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x128E01: PAO::start() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12226E: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #2: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x12914E: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEA9: std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> > >::_M_run() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4951252: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x485396A: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4B55AC2: start_thread (pthread_create.c:442)
-==22757==    by 0x4BE6A03: clone (clone.S:100)
-==22757== 
-User 4 requested to find MST of the Graph
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #3 was created
-==22757==    at 0x4BE69F3: clone (clone.S:76)
-==22757==    by 0x4BE78EE: __clone_internal (clone-internal.c:83)
-==22757==    by 0x4B556D8: create_thread (pthread_create.c:295)
-==22757==    by 0x4B561FF: pthread_create@@GLIBC_2.34 (pthread_create.c:828)
-==22757==    by 0x4853767: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4951328: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x129D95: std::thread::thread<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*&, void>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x128E01: PAO::start() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12226E: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #3: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x12914E: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEA9: std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> > >::_M_run() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4951252: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x485396A: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4B55AC2: start_thread (pthread_create.c:442)
-==22757==    by 0x4BE6A03: clone (clone.S:100)
-==22757== 
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #4 was created
-==22757==    at 0x4BE69F3: clone (clone.S:76)
-==22757==    by 0x4BE78EE: __clone_internal (clone-internal.c:83)
-==22757==    by 0x4B556D8: create_thread (pthread_create.c:295)
-==22757==    by 0x4B561FF: pthread_create@@GLIBC_2.34 (pthread_create.c:828)
-==22757==    by 0x4853767: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4951328: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x129D95: std::thread::thread<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*&, void>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x128E01: PAO::start() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12226E: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #4: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x12914E: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEA9: std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> > >::_M_run() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4951252: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x485396A: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4B55AC2: start_thread (pthread_create.c:442)
-==22757==    by 0x4BE6A03: clone (clone.S:100)
-==22757== 
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #5 was created
-==22757==    at 0x4BE69F3: clone (clone.S:76)
-==22757==    by 0x4BE78EE: __clone_internal (clone-internal.c:83)
-==22757==    by 0x4B556D8: create_thread (pthread_create.c:295)
-==22757==    by 0x4B561FF: pthread_create@@GLIBC_2.34 (pthread_create.c:828)
-==22757==    by 0x4853767: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4951328: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x129D95: std::thread::thread<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*&, void>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x128E01: PAO::start() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12226E: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #5: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x12914E: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEA9: std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> > >::_M_run() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4951252: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x485396A: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4B55AC2: start_thread (pthread_create.c:442)
-==22757==    by 0x4BE6A03: clone (clone.S:100)
-==22757== 
-==22757== ---Thread-Announcement------------------------------------------
-==22757== 
-==22757== Thread #6 was created
-==22757==    at 0x4BE69F3: clone (clone.S:76)
-==22757==    by 0x4BE78EE: __clone_internal (clone-internal.c:83)
-==22757==    by 0x4B556D8: create_thread (pthread_create.c:295)
-==22757==    by 0x4B561FF: pthread_create@@GLIBC_2.34 (pthread_create.c:828)
-==22757==    by 0x4853767: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4951328: std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x129D95: std::thread::thread<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*&, void>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x128E01: PAO::start() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12226E: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Thread #6: pthread_cond_{signal,broadcast}: dubious: associated lock is not held by any thread
-==22757==    at 0x48513D6: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x12914E: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEA9: std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> > >::_M_run() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4951252: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==22757==    by 0x485396A: ??? (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x4B55AC2: start_thread (pthread_create.c:442)
-==22757==    by 0x4BE6A03: clone (clone.S:100)
-==22757== 
-
-PAO-server: cleaning up resources...
-PAO-server: Graphs freed,
-PAO-server: Clients freed,
-Good Bye!
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during read of size 8 at 0x15D300 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130EEF: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== This conflicts with a previous write of size 8 by thread #2
-==22757== Locks held: none
-==22757==    at 0x130B08: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x15d300 is 0 bytes inside data symbol "_ZN11MST_Factory8instanceE"
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x15D300 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130F18: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== This conflicts with a previous write of size 8 by thread #2
-==22757== Locks held: none
-==22757==    at 0x130B08: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x15d300 is 0 bytes inside data symbol "_ZN11MST_Factory8instanceE"
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during read of size 8 at 0x4DE7E70 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130F64: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== This conflicts with a previous write of size 8 by thread #2
-==22757== Locks held: none
-==22757==    at 0x130CC0: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4de7e70 is 64 bytes inside a block of size 72 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x133679: __gnu_cxx::new_allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::allocate(unsigned long, void const*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x133405: std::allocator_traits<std::allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >&, unsigned long) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132E68: std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_get_node() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1335C9: std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_create_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x133396: std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node::operator()<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132D9F: std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132372: std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_unique_<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node>(std::_Rb_tree_const_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131C00: std::enable_if<std::is_same<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::iterator_traits<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*>::value_type>::value, void>::type std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_range_unique<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131669: std::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, MST_Strategy*, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::map(std::initializer_list<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > const&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131154: __static_initialization_and_destruction_0(int, int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131235: _GLOBAL__sub_I__ZN11MST_Factory8instanceE (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #1
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during read of size 8 at 0x4DF1210 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130F6D: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4df1210 is 0 bytes inside a block of size 8 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x130C71: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #2
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x4DF1210 by thread #1
-==22757== Locks held: none
-==22757==    at 0x12EE71: Boruvka::~Boruvka() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12EE9F: Boruvka::~Boruvka() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x130F7B: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4df1210 is 0 bytes inside a block of size 8 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x130C71: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #2
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x4DE7E70 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130F80: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757== 
-==22757== This conflicts with a previous write of size 8 by thread #2
-==22757== Locks held: none
-==22757==    at 0x130CC0: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4de7e70 is 64 bytes inside a block of size 72 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x133679: __gnu_cxx::new_allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::allocate(unsigned long, void const*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x133405: std::allocator_traits<std::allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > > >::allocate(std::allocator<std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >&, unsigned long) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132E68: std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_get_node() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1335C9: std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_create_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x133396: std::_Rb_tree_node<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >* std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node::operator()<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132D9F: std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node>(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x132372: std::_Rb_tree_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_unique_<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node>(std::_Rb_tree_const_iterator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const&, std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_Alloc_node&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131C00: std::enable_if<std::is_same<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::iterator_traits<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*>::value_type>::value, void>::type std::_Rb_tree<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*>, std::_Select1st<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::_M_insert_range_unique<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*>(std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*, std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> const*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131669: std::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, MST_Strategy*, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > >::map(std::initializer_list<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> >, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, MST_Strategy*> > const&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131154: __static_initialization_and_destruction_0(int, int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x131235: _GLOBAL__sub_I__ZN11MST_Factory8instanceE (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #1
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x4DF06A0 by thread #1
-==22757== Locks held: none
-==22757==    at 0x130A8F: Kruskal::~Kruskal() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x130ABD: Kruskal::~Kruskal() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x130F7B: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4df06a0 is 0 bytes inside a block of size 8 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x130B8B: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #2
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x4DEDC20 by thread #1
-==22757== Locks held: none
-==22757==    at 0x1385B1: Prim::~Prim() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1385DF: Prim::~Prim() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x130F7B: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4dedc20 is 0 bytes inside a block of size 8 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x130B18: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #2
-==22757== 
-==22757== ----------------------------------------------------------------
-==22757== 
-==22757== Possible data race during write of size 8 at 0x4DF11C0 by thread #1
-==22757== Locks held: none
-==22757==    at 0x13AA39: Tarjan::~Tarjan() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x13AA67: Tarjan::~Tarjan() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x130F7B: MST_Factory::cleanUp() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B06494: __run_exit_handlers (exit.c:113)
-==22757==    by 0x4B0660F: exit (exit.c:143)
-==22757==    by 0x121A32: handleSig(int) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x4B0351F: ??? (in /usr/lib/x86_64-linux-gnu/libc.so.6)
-==22757==    by 0x4BD9BCE: poll (poll.c:29)
-==22757==    by 0x1226DB: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Address 0x4df11c0 is 0 bytes inside a block of size 8 alloc'd
-==22757==    at 0x484B093: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so)
-==22757==    by 0x130BFE: MST_Factory::getInstance() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x121A6C: main::{lambda(void*)#1}::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x124247: void std::__invoke_impl<void, main::{lambda(void*)#1}&, void*>(std::__invoke_other, main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x123A30: std::enable_if<is_invocable_r_v<void, main::{lambda(void*)#1}&, void*>, void>::type std::__invoke_r<void, main::{lambda(void*)#1}&, void*>(main::{lambda(void*)#1}&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1233C6: std::_Function_handler<void (void*), main::{lambda(void*)#1}>::_M_invoke(std::_Any_data const&, void*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x129F1E: std::function<void (void*)>::operator()(void*) const (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x1290FA: PAO::workerFunction(PAO::Worker&, PAO::Worker*) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E1A4: void std::__invoke_impl<void, void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(std::__invoke_memfun_deref, void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12E06D: std::__invoke_result<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>::type std::__invoke<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*>(void (PAO::*&&)(PAO::Worker&, PAO::Worker*), PAO*&&, std::reference_wrapper<PAO::Worker>&&, PAO::Worker*&&) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DF4C: void std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::_M_invoke<0ul, 1ul, 2ul, 3ul>(std::_Index_tuple<0ul, 1ul, 2ul, 3ul>) (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==    by 0x12DEC9: std::thread::_Invoker<std::tuple<void (PAO::*)(PAO::Worker&, PAO::Worker*), PAO*, std::reference_wrapper<PAO::Worker>, PAO::Worker*> >::operator()() (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==22757==  Block was alloc'd by thread #2
-==22757== 
---22757-- REDIR: 0x4b53df0 (libc.so.6:pthread_cond_broadcast@@GLIBC_2.3.2) redirected to 0x4854d20 (pthread_cond_broadcast@*)
---22757-- REDIR: 0x4b574b0 (libc.so.6:pthread_join@@GLIBC_2.34) redirected to 0x48548a0 (pthread_join)
+==33993== Helgrind, a thread error detector
+==33993== Copyright (C) 2007-2017, and GNU GPL'd, by OpenWorks LLP et al.
+==33993== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==33993== Command: ./pao-server
+==33993== 
+--33993-- Valgrind options:
+--33993--    --tool=helgrind
+--33993--    -v
+--33993--    --error-exitcode=99
+--33993-- Contents of /proc/version:
+--33993--   Linux version 6.8.0-45-generic (buildd@lcy02-amd64-075) (x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2
+--33993-- 
+--33993-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3
+--33993-- Page sizes: currently 4096, max supported 4096
+--33993-- Valgrind library directory: /usr/libexec/valgrind
+==33993== helgrind --delta-stacktrace=yes only works with --vex-guest-chase=no
+==33993== => (re-setting it to 'no')
+--33993-- Reading syms from /home/ido/Course-OperationSystems/OS-FinalProject/pao-server
+--33993-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--33993--   Considering /usr/lib/debug/.build-id/41/86944c50f8a32b47d74931e3f512b811813b64.debug ..
+--33993--   .. build-id is valid
+--33993-- Reading syms from /usr/libexec/valgrind/helgrind-amd64-linux
+--33993--    object doesn't have a symbol table
+--33993--    object doesn't have a dynamic symbol table
+--33993-- Scheduler: using generic scheduler lock implementation.
+--33993-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==33993== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-33993-by-ido-on-???
+==33993== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-33993-by-ido-on-???
+==33993== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-33993-by-ido-on-???
+==33993== 
+==33993== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==33993== don't want to do, unless you know exactly what you're doing,
+==33993== or are doing some strange experiment):
+==33993==   /usr/bin/vgdb --pid=33993 ...command...
+==33993== 
+==33993== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==33993==   /path/to/gdb ./pao-server
+==33993== and then give GDB the following command
+==33993==   target remote | /usr/bin/vgdb --pid=33993
+==33993== --pid is optional if only one valgrind process is running
+==33993== 
+--33993-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--33993--    object doesn't have a symbol table
+--33993-- Reading syms from /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+--33993--    object doesn't have a symbol table
+--33993-- REDIR: 0x4027220 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4856720 (strcmp)
+--33993-- REDIR: 0x402aa40 (ld-linux-x86-64.so.2:strlen) redirected to 0x4855c20 (strlen)
+--33993-- REDIR: 0x402afa0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x48598f0 (mempcpy)
+--33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
+--33993--    object doesn't have a symbol table
+--33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+--33993--    object doesn't have a symbol table
+--33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--33993--   Considering /usr/lib/debug/.build-id/49/0fef8403240c91833978d494d39e537409b92e.debug ..
+--33993--   .. build-id is valid
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
+--33993--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
+--33993--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552d0 sem_post@*
+--33993--     new: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552c0 sem_post
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552b0 sem_wait@*
+--33993--     new: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552a0 sem_wait
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
+==33993== WARNING: new redirection conflicts with existing -- ignoring it
+--33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
+--33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libm.so.6
+--33993--   Considering /usr/lib/debug/.build-id/a5/08ec5d8bf12fb7fd08204e0f87518e5cd0b102.debug ..
+--33993--   .. build-id is valid
+--33993-- REDIR: 0x4b69720 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b699e0 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b692e0 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b87cd0 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a6d0 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b86540 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6ac10 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b86370 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69260 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69960 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a5a0 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b863f0 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a9e0 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b869b0 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69830 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6aa70 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69420 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b86470 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b691d0 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6ab60 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a480 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b72570 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6c010 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69390 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6ab10 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b696a0 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b698d0 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a950 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a3f0 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b69b00 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6a7d0 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6aac0 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b6bf80 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--33993-- REDIR: 0x4b7b650 (libc.so.6:__strrchr_sse2) redirected to 0x4855820 (__strrchr_sse2)
+--33993-- REDIR: 0x4b660a0 (libc.so.6:malloc) redirected to 0x484a8a0 (malloc)
+--33993-- REDIR: 0x4b7b950 (libc.so.6:__strlen_sse2) redirected to 0x4855b60 (__strlen_sse2)
+--33993-- REDIR: 0x4c63b30 (libc.so.6:__memcmp_sse4_1) redirected to 0x4858750 (__memcmp_sse4_1)
+--33993-- REDIR: 0x4b85870 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4856850 (memcpy@GLIBC_2.2.5)
+--33993-- REDIR: 0x4923970 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x484b020 (operator new(unsigned long))
+--33993-- REDIR: 0x4921c20 (libstdc++.so.6:operator delete(void*, unsigned long)) redirected to 0x484db80 (operator delete(void*, unsigned long))
+--33993-- REDIR: 0x4b55c40 (libc.so.6:pthread_create@@GLIBC_2.34) redirected to 0x4854890 (pthread_create@*)
+--33993-- REDIR: 0x4b67520 (libc.so.6:calloc) redirected to 0x484fa50 (calloc)
+--33993-- REDIR: 0x4b58ef0 (libc.so.6:pthread_mutex_lock@@GLIBC_2.2.5) redirected to 0x4854cb0 (pthread_mutex_lock)
+--33993-- REDIR: 0x4b5aa70 (libc.so.6:pthread_mutex_unlock@@GLIBC_2.2.5) redirected to 0x4854ce0 (pthread_mutex_unlock)
+--33993-- REDIR: 0x4b54830 (libc.so.6:pthread_cond_wait@@GLIBC_2.3.2) redirected to 0x4854cf0 (pthread_cond_wait@*)
+--33993-- REDIR: 0x4b85f60 (libc.so.6:__memset_sse2_unaligned) redirected to 0x4858aa0 (memset)
+--33993-- REDIR: 0x4b663e0 (libc.so.6:free) redirected to 0x484d290 (free)
+--33993-- REDIR: 0x4b69fc0 (libc.so.6:__GI_strstr) redirected to 0x4859a60 (__strstr_sse2)
+--33993-- REDIR: 0x4b75880 (libc.so.6:__memchr_sse2) redirected to 0x48567a0 (memchr)
+--33993-- REDIR: 0x4b7b210 (libc.so.6:__strchr_sse2) redirected to 0x4855940 (__strchr_sse2)
+--33993-- REDIR: 0x4b66740 (libc.so.6:realloc) redirected to 0x484fcd0 (realloc)
+error getting listening socket
+--33993-- REDIR: 0x4b53df0 (libc.so.6:pthread_cond_broadcast@@GLIBC_2.3.2) redirected to 0x4854d20 (pthreavex amd64->IR: unhandled instruction bytes: 0x6F 0x72 0x0 0x5F 0x5F 0x63 0x6F 0x6E 0x73 0x74
+vex amd64->IR:   REX=0 REX.W=0 REX.R=0 REX.X=0 REX.B=0
+vex amd64->IR:   VEX=0 VEX.L=0 VEX.nVVVV=0x0 ESC=NONE
+vex amd64->IR:   PFX.66=0 PFX.F2=0 PFX.F3=0
+==33915== valgrind: Unrecognised instruction at address 0x122936.
+==33915==    at 0x122936: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
+==33915== Your program just tried to execute an instruction that Valgrind
+==33915== did not recognise.  There are two possible reasons for this.
+==33915== 1. Your program has a bug and erroneously jumped to a non-code
+==33915==    location.  If you are running Memcheck and you just saw a
+==33915==    warning about a bad jump, it's probably your program's fault.
+==33915== 2. The instruction is legitimate but Valgrind doesn't handle it,
+==33915==    i.e. it's Valgrind's fault.  If you think this is the case or
+==33915==    you are not sure, please let us know and we'll try to fix it.
+==33915== Either way, Valgrind will now raise a SIGILL signal which will
+==33915== probably kill your program.
+==33915== 
+==33915== Process terminating with default action of signal 4 (SIGILL)
+==33915==  Illegal opcode at address 0x122936
+==33915==    at 0x122936: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
+==33915== 
+==33915== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

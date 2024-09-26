@@ -96,10 +96,12 @@ int main(void)
     const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
     const vector<string> mstStrats = {"prim", "kruskal", "tarjan", "boruvka"};
 
-    string action;
-    string actualAction;
-    int m, n, weight;
-    string strat;
+    string action= "";
+    string actualAction = "";
+    int n = 0; 
+    int m = 0;
+    int weight = 0;
+    string strat = "";
     map<int, bool> connections_in_use;
     char welcomeMsg[WELCOME_MSG_SIZE] =
         "Welcome to the LF-server!\n"
@@ -112,14 +114,15 @@ int main(void)
     int newfd;                          // Newly accept()ed socket descriptor
     struct sockaddr_storage remoteaddr; // Client address
     socklen_t addrlen;
-    char buf[256]; // Buffer for client data
-    char remoteIP[INET6_ADDRSTRLEN];
+    char buf[256]={0}; // Buffer for client data
+    char remoteIP[INET6_ADDRSTRLEN]={0};
 
     // Start off with room for 5 connections (isnt it four? because one is the listener..)
     // (We'll realloc as necessary)
     fd_count = 0;
     int fd_size = 5;
     pfds = (struct pollfd *)malloc(sizeof *pfds * (size_t)fd_size);
+    memset(pfds, 0, sizeof *pfds * (size_t)fd_size);
 
     // Set up and get a listening socket
     int listener = getListenerSocket(); // Listening socket descriptor

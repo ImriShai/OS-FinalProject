@@ -7,7 +7,7 @@
 MST_Factory *MST_Factory::instance = nullptr;
 
 std::map<std::string, MST_Strategy *> MST_Factory::strats = {{"prim", nullptr}, {"kruskal", nullptr}, {"tarjan", nullptr}, {"boruvka", nullptr}};
-
+std::mutex MST_Factory::instance_mutex;
 
 MST_Factory *MST_Factory::getInstance()
 {
@@ -25,6 +25,7 @@ MST_Factory *MST_Factory::getInstance()
 
 MST_Strategy* MST_Factory::createMST(std::string type)
 {
+    std::lock_guard<std::mutex> lock(instance_mutex);  // Lock the mutex
     if(strats.find(type) != strats.end())
     {
         return strats[type];
@@ -34,6 +35,7 @@ MST_Strategy* MST_Factory::createMST(std::string type)
 
 void MST_Factory::cleanUp()
 {
+    std::lock_guard<std::mutex> lock(instance_mutex);
     if (instance != nullptr)
     {
         delete instance;

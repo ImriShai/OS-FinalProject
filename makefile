@@ -3,7 +3,7 @@ CC = g++
 
 # Compiler flags
 CFLAGS = -std=c++17 -Werror -Wsign-conversion
-MEMCHECK_FLAGS = -v --leak-check=full --show-leak-kinds=all --error-exitcode=99
+MEMCHECK_FLAGS = -v --leak-check=full --show-leak-kinds=all --error-exitcode=99 
 CACHEGRIND_FLAGS = -v --error-exitcode=99
 HELGRIND_FLAGS = -v --error-exitcode=99
 
@@ -30,7 +30,7 @@ all: lf-server pao-server
 lf-memcheck: lf-server
 	@echo "Starting lf-server with Valgrind memcheck..."
 	@trap 'kill $$valgrind_pid' SIGINT; \
-	valgrind --tool=memcheck $(MEMCHECK_FLAGS ) ./lf-server 2>&1 | tee Valgrind-reports/lf-server_memcheck.txt & \
+	valgrind --tool=memcheck $(MEMCHECK_FLAGS) ./lf-server 2>&1 | tee Valgrind-reports/lf-server_memcheck.txt & \
 	valgrind_pid=$$!; \
 	wait $$valgrind_pid
 
@@ -51,18 +51,10 @@ lf-helgrind: lf-server
 	wait $$valgrind_pid
 
 # PAO - Memory check:
-pao-memcheck: pao-server
+pao-memcheck: pao-server-DONT_RUN!
 	@echo "Starting pao-server with Valgrind memcheck..."
 	@trap 'kill $$valgrind_pid' SIGINT; \
 	valgrind --tool=memcheck $(MEMCHECK_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_memcheck.txt & \
-	valgrind_pid=$$!; \
-	wait $$valgrind_pid
-
-# PAO - CacheGrind for pao-server:
-pao-cachegrind: pao-server
-	@echo "Starting pao-server with Valgrind cachegrind..."
-	@trap 'kill $$valgrind_pid' SIGINT; \
-	valgrind --tool=cachegrind $(CACHEGRIND_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_cachegrind.txt & \
 	valgrind_pid=$$!; \
 	wait $$valgrind_pid
 
@@ -71,6 +63,14 @@ pao-helgrind: pao-server
 	@echo "Starting pao-server with Valgrind helgrind..."
 	@trap 'kill $$valgrind_pid' SIGINT; \
 	valgrind --tool=helgrind $(HELGRIND_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_helgrind.txt & \
+	valgrind_pid=$$!; \
+	wait $$valgrind_pid
+
+# PAO - CacheGrind for pao-server:
+pao-cachegrind: pao-server
+	@echo "Starting pao-server with Valgrind cachegrind..."
+	@trap 'kill $$valgrind_pid' SIGINT; \
+	valgrind --tool=cachegrind $(CACHEGRIND_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_cachegrind.txt & \
 	valgrind_pid=$$!; \
 	wait $$valgrind_pid
 

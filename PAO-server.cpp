@@ -1,7 +1,3 @@
-/*
-** pollserver.c -- a cheezy multiperson chat server
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,10 +21,9 @@
 
 // to handle the CTRL+C signal
 #include <signal.h>
-#include <atomic>
 
 #define PORT "9036"   // Port we're listening on
-#define WELCOME_MSG_SIZE 510
+#define WELCOME_MSG_SIZE 480
 
 using namespace std;
 
@@ -54,7 +49,6 @@ unique_ptr<PAO> pao = nullptr; // unique pointer to the PAO object
  */
 std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat)
 {
-    Graph* tmp = new Graph(*g,true);  // create a copy of the graph
     clients_graphs[clientFd].second = new Triple{g, strat, clientFd};  // creating a new triple on the heap := {&g, strat, clientFd}. it will be deleted in the last function
     pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
 
@@ -71,11 +65,13 @@ void handleSig(int sig) {
     // graphs:
 
     for(auto& graph_triple : clients_graphs) {
-        if(graph_triple.second.first != nullptr) {
+        if(graph_triple.second.first != nullptr) {  // freeing the graph
             delete graph_triple.second.first;
         }
-        if(graph_triple.second.second != nullptr) {
-            delete graph_triple.second.second;
+        if(graph_triple.second.second != nullptr) {  // freeing the triple
+            if(graph_triple.second.second->g != nullptr)  // freeing the graph in the triple
+                delete graph_triple.second.second->g;
+            delete graph_triple.second.second;  // freeing the triple itself
         }
     }
 
@@ -89,7 +85,8 @@ void handleSig(int sig) {
     }
     free(pfds);
     cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
-    exit(0);
+
+    // exit(0);
 }
 
  
@@ -136,10 +133,10 @@ int main(void) {
     const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
     const vector<string> mstStrats = {"prim", "kruskal", "tarjan", "boruvka"};
 
-    string action;
-    string actualAction;
-    int m, n, weight;  // n := number of vertices, m := number of edges, weight := weight of the edge
-    string strat;  // strategy for the MST
+    string action = "";
+    string actualAction = "";
+    int m =0, n= 0, weight= 0;  // n := number of vertices, m := number of edges, weight := weight of the edge
+    string strat = "";  // strategy for the MST
  
     char welcomeMsg[WELCOME_MSG_SIZE] = 
         "Welcome to the PAO-server!\n"
@@ -147,14 +144,14 @@ int main(void) {
         "1. Create a new graph: newgraph n m where \"n\" is the number of vertices and \"m\" is the number of edges.\n"
         "2. Add an edge to the graph: newedge n m w where \"n\" and \"m\" are the vertices and \"w\" is the weight of the edge.\n"
         "3. Remove an edge from the graph: removeedge n m where \"n\" and \"m\" are the vertices.\n"
-        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim', 'kruskal', 'tarjan' or 'boruvka'\n";
+        "4. Find the Minimum Spanning Tree of the graph: mst strat -  where strat is either 'prim' or 'kruskal'\n";
 
 
     int newfd;                          // Newly accepted socket descriptor
     struct sockaddr_storage remoteaddr; // Client address
     socklen_t addrlen;
-    char buf[256]; // Buffer for client data
-    char remoteIP[INET6_ADDRSTRLEN];
+    char buf[256]= {0}; // Buffer for client data
+    char remoteIP[INET6_ADDRSTRLEN] ={0};
 
     // Start off with room for 5 connections (isnt it four? because one is the listener..)
     // (We'll realloc as necessary)
@@ -169,12 +166,13 @@ int main(void) {
 
     // Add the listener to set
     pfds = (struct pollfd *)malloc(sizeof *pfds * (size_t)fd_size);
+    memset(pfds, 0, sizeof *pfds * (size_t)fd_size);
     pfds[0].fd = listener;
     pfds[0].events = POLLIN; // Report ready to read on incoming connection
     fd_count = 1; // For the listener
     cout << "PAO-server: waiting for connections..." << endl;
 
-    signal(SIGINT, handleSig);  // handle the CTRL+C signal
+    signal(SIGTERM, handleSig);  // handle the CTRL+C signal
 
     // Main loop
     while(true){
