@@ -89,3 +89,27 @@ pao-server: $(PAO-OBJ)
 # Clean build files
 clean:
 	rm -f *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
+
+
+
+# Code coverage for lf-server
+coverage-lf: CFLAGS += -fprofile-arcs -ftest-coverage
+coverage-lf: LDFLAGS += -lgcov
+coverage-lf: clean lf-server
+	@echo "Running code coverage for lf-server..."
+	@./lf-server
+	@gcov $(graphSrc) $(lf-serverSrc) $(MSTSrc) $(DATASTRUCTSrc) $(UTILSrc)
+	@echo "Generating coverage report for lf-server..."
+	@gcov $(lf-serverSrc) > coverage_lf_report.txt
+	@echo "Coverage report for lf-server saved to coverage_lf_report.txt."
+
+# Code coverage for pao-server
+coverage-pao: CFLAGS += -fprofile-arcs -ftest-coverage
+coverage-pao: LDFLAGS += -lgcov
+coverage-pao: clean pao-server
+	@echo "Running code coverage for pao-server..."
+	@./pao-server
+	@gcov $(graphSrc) $(PAO) $(MSTSrc) $(DATASTRUCTSrc) $(UTILSrc)
+	@echo "Generating coverage report for pao-server..."
+	@gcov $(PAO) > coverage_pao_report.txt
+	@echo "Coverage report for pao-server saved to coverage_pao_report.txt."
