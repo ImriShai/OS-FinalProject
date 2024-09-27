@@ -39,30 +39,33 @@ PAO::~PAO() {
  * in this function, the object will give the first thread the mst and the string and it will start working on it.
  */
 void PAO::addTask(void* task) {
-    {
-        std::lock_guard<std::mutex> lock(*(workers[0].queueMutex));
-        workers[0].taskQueue.push(task);
-    }
+    
+    std::lock_guard<std::mutex> lock(*(workers[0].queueMutex));
+    workers[0].taskQueue.push(task);
     workers[0].condition->notify_one();  // notify the first worker to start working
 }
 
+/**
+ * this function will start all the threads.
+ * it will iterate over all the workers and start the thread with the workerFunction.
+ */
 void PAO::start() {
     stopFlag = false;
     
     for (size_t i = 0; i < workers.size(); ++i) {
-        Worker* nextWorker = (i + 1 < workers.size()) ? &workers[i + 1] : nullptr;
+        Worker* nextWorker = (i + 1 < workers.size()) ? &workers[i + 1] : nullptr;  // if the worker is not the last one, set the nextWorker to the next worker
         *(workers[i].thread) = std::thread(&PAO::workerFunction, this, std::ref(workers[i]), nextWorker);
     }
 }
 
 void PAO::stop() {
     stopFlag = true;
-    for (auto& worker : workers) {
-        lock_guard<mutex> lock(*worker.queueMutex);
+    for (auto& worker : workers) {  // notify all the workers to stop
+        std::lock_guard<std::mutex> lock(*worker.queueMutex);
         worker.condition->notify_all();
-        if (worker.thread->joinable()) {
-            worker.thread->join();
-        }
+        // if (worker.thread->joinable()) {
+        //     worker.thread->join();
+        // }
     }
 }
 
@@ -73,10 +76,12 @@ void PAO::workerFunction(Worker& worker, Worker* nextWorker) {
     while (!stopFlag) {
 
         // creating a task:
-        void* task;
+        void* task = nullptr;
         {
             std::unique_lock<std::mutex> lock(*worker.queueMutex);
-             worker.condition->wait(lock, [&]() { return stopFlag || !worker.taskQueue.empty(); });
+            // Note that in the wait function, the queueMutex is unlocked and locked again when the condition is met.
+            worker.condition->wait(lock, [&]() { return stopFlag || !worker.taskQueue.empty(); });  // while the taskQueue is empty and the stopFlag is false, wait
+
             if (stopFlag && worker.taskQueue.empty()) return;
             task = worker.taskQueue.front();
             worker.taskQueue.pop();
@@ -90,11 +95,10 @@ void PAO::workerFunction(Worker& worker, Worker* nextWorker) {
         // if the worker is not the last one
         if (nextWorker) {  
             // pushing the task to the next worker:
-            {
-                std::lock_guard<std::mutex> lock(*nextWorker->queueMutex);
-                nextWorker->taskQueue.push(task);  // actually pushes a reserence to the mst and the string
-            }
+            std::lock_guard<std::mutex> lock(*nextWorker->queueMutex);
+            nextWorker->taskQueue.push(task);  // actually pushes a reserence to the mst and the string
             nextWorker->condition->notify_one();  // notify the next worker to start working
         }
+        if(stopFlag) return;
     }
 }

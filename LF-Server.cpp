@@ -61,7 +61,6 @@ pair<string, Graph *> MST(Graph *g, int clientFd, const string &strat) // many t
  */
 void handleSig(int sig)
 {
-
     cout << "\nLF-server: cleaning up resources..." << endl;
 
     // graphs:

@@ -78,14 +78,11 @@ void handleSig(int sig) {
     // Clients: cleans the pfds
     for (int i = 0; i < fd_count; i++)
     {
-        cout << "1 - Closing client " << pfds[i].fd << endl;
         if (pfds[i].fd != -1)
         {
-            cout << "2 - Closing client " << pfds[i].fd << endl;
             close(pfds[i].fd);
         }
     }
-    cout << "3 - Freeing pfds" << endl;
     free(pfds);
     if (pao != nullptr) {
         delete pao;  // delete the PAO object

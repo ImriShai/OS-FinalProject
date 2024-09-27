@@ -1,156 +1,161 @@
-==33993== Helgrind, a thread error detector
-==33993== Copyright (C) 2007-2017, and GNU GPL'd, by OpenWorks LLP et al.
-==33993== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
-==33993== Command: ./pao-server
-==33993== 
---33993-- Valgrind options:
---33993--    --tool=helgrind
---33993--    -v
---33993--    --error-exitcode=99
---33993-- Contents of /proc/version:
---33993--   Linux version 6.8.0-45-generic (buildd@lcy02-amd64-075) (x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2
---33993-- 
---33993-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3
---33993-- Page sizes: currently 4096, max supported 4096
---33993-- Valgrind library directory: /usr/libexec/valgrind
-==33993== helgrind --delta-stacktrace=yes only works with --vex-guest-chase=no
-==33993== => (re-setting it to 'no')
---33993-- Reading syms from /home/ido/Course-OperationSystems/OS-FinalProject/pao-server
---33993-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
---33993--   Considering /usr/lib/debug/.build-id/41/86944c50f8a32b47d74931e3f512b811813b64.debug ..
---33993--   .. build-id is valid
---33993-- Reading syms from /usr/libexec/valgrind/helgrind-amd64-linux
---33993--    object doesn't have a symbol table
---33993--    object doesn't have a dynamic symbol table
---33993-- Scheduler: using generic scheduler lock implementation.
---33993-- Reading suppressions file: /usr/libexec/valgrind/default.supp
-==33993== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-33993-by-ido-on-???
-==33993== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-33993-by-ido-on-???
-==33993== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-33993-by-ido-on-???
-==33993== 
-==33993== TO CONTROL THIS PROCESS USING vgdb (which you probably
-==33993== don't want to do, unless you know exactly what you're doing,
-==33993== or are doing some strange experiment):
-==33993==   /usr/bin/vgdb --pid=33993 ...command...
-==33993== 
-==33993== TO DEBUG THIS PROCESS USING GDB: start GDB like this
-==33993==   /path/to/gdb ./pao-server
-==33993== and then give GDB the following command
-==33993==   target remote | /usr/bin/vgdb --pid=33993
-==33993== --pid is optional if only one valgrind process is running
-==33993== 
---33993-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
---33993--    object doesn't have a symbol table
---33993-- Reading syms from /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
---33993--    object doesn't have a symbol table
---33993-- REDIR: 0x4027220 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4856720 (strcmp)
---33993-- REDIR: 0x402aa40 (ld-linux-x86-64.so.2:strlen) redirected to 0x4855c20 (strlen)
---33993-- REDIR: 0x402afa0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x48598f0 (mempcpy)
---33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
---33993--    object doesn't have a symbol table
---33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
---33993--    object doesn't have a symbol table
---33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
---33993--   Considering /usr/lib/debug/.build-id/49/0fef8403240c91833978d494d39e537409b92e.debug ..
---33993--   .. build-id is valid
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
---33993--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
---33993--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552d0 sem_post@*
---33993--     new: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552c0 sem_post
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552b0 sem_wait@*
---33993--     new: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552a0 sem_wait
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
-==33993== WARNING: new redirection conflicts with existing -- ignoring it
---33993--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
---33993--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
---33993-- Reading syms from /usr/lib/x86_64-linux-gnu/libm.so.6
---33993--   Considering /usr/lib/debug/.build-id/a5/08ec5d8bf12fb7fd08204e0f87518e5cd0b102.debug ..
---33993--   .. build-id is valid
---33993-- REDIR: 0x4b69720 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b699e0 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b692e0 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b87cd0 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a6d0 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b86540 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6ac10 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b86370 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69260 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69960 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a5a0 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b863f0 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a9e0 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b869b0 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69830 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6aa70 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69420 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b86470 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b691d0 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6ab60 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a480 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b72570 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6c010 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69390 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6ab10 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b696a0 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b698d0 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a950 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a3f0 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b69b00 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6a7d0 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6aac0 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b6bf80 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
---33993-- REDIR: 0x4b7b650 (libc.so.6:__strrchr_sse2) redirected to 0x4855820 (__strrchr_sse2)
---33993-- REDIR: 0x4b660a0 (libc.so.6:malloc) redirected to 0x484a8a0 (malloc)
---33993-- REDIR: 0x4b7b950 (libc.so.6:__strlen_sse2) redirected to 0x4855b60 (__strlen_sse2)
---33993-- REDIR: 0x4c63b30 (libc.so.6:__memcmp_sse4_1) redirected to 0x4858750 (__memcmp_sse4_1)
---33993-- REDIR: 0x4b85870 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4856850 (memcpy@GLIBC_2.2.5)
---33993-- REDIR: 0x4923970 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x484b020 (operator new(unsigned long))
---33993-- REDIR: 0x4921c20 (libstdc++.so.6:operator delete(void*, unsigned long)) redirected to 0x484db80 (operator delete(void*, unsigned long))
---33993-- REDIR: 0x4b55c40 (libc.so.6:pthread_create@@GLIBC_2.34) redirected to 0x4854890 (pthread_create@*)
---33993-- REDIR: 0x4b67520 (libc.so.6:calloc) redirected to 0x484fa50 (calloc)
---33993-- REDIR: 0x4b58ef0 (libc.so.6:pthread_mutex_lock@@GLIBC_2.2.5) redirected to 0x4854cb0 (pthread_mutex_lock)
---33993-- REDIR: 0x4b5aa70 (libc.so.6:pthread_mutex_unlock@@GLIBC_2.2.5) redirected to 0x4854ce0 (pthread_mutex_unlock)
---33993-- REDIR: 0x4b54830 (libc.so.6:pthread_cond_wait@@GLIBC_2.3.2) redirected to 0x4854cf0 (pthread_cond_wait@*)
---33993-- REDIR: 0x4b85f60 (libc.so.6:__memset_sse2_unaligned) redirected to 0x4858aa0 (memset)
---33993-- REDIR: 0x4b663e0 (libc.so.6:free) redirected to 0x484d290 (free)
---33993-- REDIR: 0x4b69fc0 (libc.so.6:__GI_strstr) redirected to 0x4859a60 (__strstr_sse2)
---33993-- REDIR: 0x4b75880 (libc.so.6:__memchr_sse2) redirected to 0x48567a0 (memchr)
---33993-- REDIR: 0x4b7b210 (libc.so.6:__strchr_sse2) redirected to 0x4855940 (__strchr_sse2)
---33993-- REDIR: 0x4b66740 (libc.so.6:realloc) redirected to 0x484fcd0 (realloc)
-error getting listening socket
---33993-- REDIR: 0x4b53df0 (libc.so.6:pthread_cond_broadcast@@GLIBC_2.3.2) redirected to 0x4854d20 (pthreavex amd64->IR: unhandled instruction bytes: 0x6F 0x72 0x0 0x5F 0x5F 0x63 0x6F 0x6E 0x73 0x74
-vex amd64->IR:   REX=0 REX.W=0 REX.R=0 REX.X=0 REX.B=0
-vex amd64->IR:   VEX=0 VEX.L=0 VEX.nVVVV=0x0 ESC=NONE
-vex amd64->IR:   PFX.66=0 PFX.F2=0 PFX.F3=0
-==33915== valgrind: Unrecognised instruction at address 0x122936.
-==33915==    at 0x122936: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==33915== Your program just tried to execute an instruction that Valgrind
-==33915== did not recognise.  There are two possible reasons for this.
-==33915== 1. Your program has a bug and erroneously jumped to a non-code
-==33915==    location.  If you are running Memcheck and you just saw a
-==33915==    warning about a bad jump, it's probably your program's fault.
-==33915== 2. The instruction is legitimate but Valgrind doesn't handle it,
-==33915==    i.e. it's Valgrind's fault.  If you think this is the case or
-==33915==    you are not sure, please let us know and we'll try to fix it.
-==33915== Either way, Valgrind will now raise a SIGILL signal which will
-==33915== probably kill your program.
-==33915== 
-==33915== Process terminating with default action of signal 4 (SIGILL)
-==33915==  Illegal opcode at address 0x122936
-==33915==    at 0x122936: main (in /home/ido/Course-OperationSystems/OS-FinalProject/pao-server)
-==33915== 
-==33915== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==18085== Helgrind, a thread error detector
+==18085== Copyright (C) 2007-2017, and GNU GPL'd, by OpenWorks LLP et al.
+==18085== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==18085== Command: ./pao-server
+==18085== 
+--18085-- Valgrind options:
+--18085--    --tool=helgrind
+--18085--    -v
+--18085--    --error-exitcode=99
+--18085-- Contents of /proc/version:
+--18085--   Linux version 6.8.0-45-generic (buildd@lcy02-amd64-075) (x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #45~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep 11 15:25:05 UTC 2
+--18085-- 
+--18085-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3
+--18085-- Page sizes: currently 4096, max supported 4096
+--18085-- Valgrind library directory: /usr/libexec/valgrind
+==18085== helgrind --delta-stacktrace=yes only works with --vex-guest-chase=no
+==18085== => (re-setting it to 'no')
+--18085-- Reading syms from /home/ido/Course-OperationSystems/OS-FinalProject/pao-server
+--18085-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--18085--   Considering /usr/lib/debug/.build-id/41/86944c50f8a32b47d74931e3f512b811813b64.debug ..
+--18085--   .. build-id is valid
+--18085-- Reading syms from /usr/libexec/valgrind/helgrind-amd64-linux
+--18085--    object doesn't have a symbol table
+--18085--    object doesn't have a dynamic symbol table
+--18085-- Scheduler: using generic scheduler lock implementation.
+--18085-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==18085== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-18085-by-ido-on-???
+==18085== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-18085-by-ido-on-???
+==18085== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-18085-by-ido-on-???
+==18085== 
+==18085== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==18085== don't want to do, unless you know exactly what you're doing,
+==18085== or are doing some strange experiment):
+==18085==   /usr/bin/vgdb --pid=18085 ...command...
+==18085== 
+==18085== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==18085==   /path/to/gdb ./pao-server
+==18085== and then give GDB the following command
+==18085==   target remote | /usr/bin/vgdb --pid=18085
+==18085== --pid is optional if only one valgrind process is running
+==18085== 
+--18085-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--18085--    object doesn't have a symbol table
+--18085-- Reading syms from /usr/libexec/valgrind/vgpreload_helgrind-amd64-linux.so
+--18085--    object doesn't have a symbol table
+--18085-- REDIR: 0x4027220 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4856720 (strcmp)
+--18085-- REDIR: 0x402aa40 (ld-linux-x86-64.so.2:strlen) redirected to 0x4855c20 (strlen)
+--18085-- REDIR: 0x402afa0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x48598f0 (mempcpy)
+--18085-- Reading syms from /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
+--18085--    object doesn't have a symbol table
+--18085-- Reading syms from /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+--18085--    object doesn't have a symbol table
+--18085-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--18085--   Considering /usr/lib/debug/.build-id/49/0fef8403240c91833978d494d39e537409b92e.debug ..
+--18085--   .. build-id is valid
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
+--18085--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551d0 pthread_spin_unlock
+--18085--     new: 0x04b5cdf0 (pthread_spin_init@@G) W-> (0000.0) 0x048551c0 pthread_spin_init
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552d0 sem_post@*
+--18085--     new: 0x04b5d470 (sem_post@@GLIBC_2.34) W-> (0000.0) 0x048552c0 sem_post
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552b0 sem_wait@*
+--18085--     new: 0x04b5dcc0 (sem_wait@@GLIBC_2.34) W-> (0000.0) 0x048552a0 sem_wait
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--18085--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--18085--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--18085--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500d0 aligned_alloc
+==18085== WARNING: new redirection conflicts with existing -- ignoring it
+--18085--     old: 0x04b66c60 (memalign            ) R-> (1011.0) 0x04850100 memalign
+--18085--     new: 0x04b66c60 (memalign            ) R-> (1017.0) 0x048500a0 aligned_alloc
+--18085-- Reading syms from /usr/lib/x86_64-linux-gnu/libm.so.6
+--18085--   Considering /usr/lib/debug/.build-id/a5/08ec5d8bf12fb7fd08204e0f87518e5cd0b102.debug ..
+--18085--   .. build-id is valid
+--18085-- REDIR: 0x4b69720 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b699e0 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b692e0 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b87cd0 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a6d0 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b86540 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6ac10 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b86370 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69260 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69960 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a5a0 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b863f0 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a9e0 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b869b0 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69830 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6aa70 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69420 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b86470 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b691d0 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6ab60 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a480 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b72570 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6c010 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69390 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6ab10 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b696a0 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b698d0 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a950 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a3f0 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b69b00 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6a7d0 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6aac0 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b6bf80 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--18085-- REDIR: 0x4b7b650 (libc.so.6:__strrchr_sse2) redirected to 0x4855820 (__strrchr_sse2)
+--18085-- REDIR: 0x4b660a0 (libc.so.6:malloc) redirected to 0x484a8a0 (malloc)
+--18085-- REDIR: 0x4b7b950 (libc.so.6:__strlen_sse2) redirected to 0x4855b60 (__strlen_sse2)
+--18085-- REDIR: 0x4c63b30 (libc.so.6:__memcmp_sse4_1) redirected to 0x4858750 (__memcmp_sse4_1)
+--18085-- REDIR: 0x4b85870 (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4856850 (memcpy@GLIBC_2.2.5)
+--18085-- REDIR: 0x4923970 (libstdc++.so.6:operator new(unsigned long)) redirected to 0x484b020 (operator new(unsigned long))
+--18085-- REDIR: 0x4921c20 (libstdc++.so.6:operator delete(void*, unsigned long)) redirected to 0x484db80 (operator delete(void*, unsigned long))
+--18085-- REDIR: 0x4b55c40 (libc.so.6:pthread_create@@GLIBC_2.34) redirected to 0x4854890 (pthread_create@*)
+--18085-- REDIR: 0x4b67520 (libc.so.6:calloc) redirected to 0x484fa50 (calloc)
+--18085-- REDIR: 0x4b58ef0 (libc.so.6:pthread_mutex_lock@@GLIBC_2.2.5) redirected to 0x4854cb0 (pthread_mutex_lock)
+--18085-- REDIR: 0x4b5aa70 (libc.so.6:pthread_mutex_unlock@@GLIBC_2.2.5) redirected to 0x4854ce0 (pthread_mutex_unlock)
+--18085-- REDIR: 0x4b54830 (libc.so.6:pthread_cond_wait@@GLIBC_2.3.2) redirected to 0x4854cf0 (pthread_cond_wait@*)
+--18085-- REDIR: 0x4b85f60 (libc.so.6:__memset_sse2_unaligned) redirected to 0x4858aa0 (memset)
+--18085-- REDIR: 0x4b663e0 (libc.so.6:free) redirected to 0x484d290 (free)
+--18085-- REDIR: 0x4b69fc0 (libc.so.6:__GI_strstr) redirected to 0x4859a60 (__strstr_sse2)
+--18085-- REDIR: 0x4b75880 (libc.so.6:__memchr_sse2) redirected to 0x48567a0 (memchr)
+--18085-- REDIR: 0x4b7b210 (libc.so.6:__strchr_sse2) redirected to 0x4855940 (__strchr_sse2)
+--18085-- REDIR: 0x4b66740 (libc.so.6:realloc) redirected to 0x484fcd0 (realloc)
+--18085-- REDIR: 0x4b85850 (libc.so.6:__mempcpy_sse2_unaligned) redirected to 0x4859770 (mempcpy)
+PAO-server: waiting for connections...
+--18085-- REDIR: 0x4b7b440 (libc.so.6:__strchrnul_sse2) redirected to 0x4859660 (strchrnul)
+--18085-- REDIR: 0x4b80890 (libc.so.6:__strcpy_sse2_unaligned) redirected to 0x4855c50 (strcpy)
+pollserver: new connection from 127.0.0.1 on socket 4
+Action received: newgraph 3 3
+ from client 4
+Creating a new graph with 3 vertices and 3 edges
+--18085-- REDIR: 0x4921c10 (libstdc++.so.6:operator delete(void*)) redirected to 0x484d8c0 (operator delete(void*))
+Graph created successfully
+Action received: mst from client 4
+--18085-- REDIR: 0x4b54220 (libc.so.6:pthread_cond_signal@@GLIBC_2.3.2) redirected to 0x4854d10 (pthread_cond_signal@*)
+User 4 requested to find MST of the Graph
+pollserver: socket 4 hung up
+
+PAO-server: cleaning up resources...
+PAO-server: Graphs freed,
+--18085-- REDIR: 0x4b53df0 (libc.so.6:pthread_cond_broadcast@@GLIBC_2.3.2) redirected to 0x4854d20 (pthread_cond_broadcast@*)
+--18085-- REDIR: 0x4b574b0 (libc.so.6:pthread_join@@GLIBC_2.34) redirected to 0x48548a0 (pthread_join)
+--18085-- REDIR: 0x4b54150 (libc.so.6:pthread_cond_destroy@@GLIBC_2.3.2) redirected to 0x4854d40 (pthread_cond_destroy@*)
+PAO-server: Clients freed,
+Good Bye!
+==18085== 
+==18085== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 170 from 14)
+--18085-- 
+--18085-- used_suppression:    170 helgrind-glibc2X-005 /usr/libexec/valgrind/default.supp:947
+==18085== 
+==18085== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 170 from 14)
