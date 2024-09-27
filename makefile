@@ -51,7 +51,7 @@ lf-helgrind: lf-server
 	wait $$valgrind_pid
 
 # PAO - Memory check:
-pao-memcheck: pao-server-DONT_RUN!
+pao-memcheck: pao-server
 	@echo "Starting pao-server with Valgrind memcheck..."
 	@trap 'kill $$valgrind_pid' SIGINT; \
 	valgrind --tool=memcheck $(MEMCHECK_FLAGS) ./pao-server 2>&1 | tee Valgrind-reports/pao-server_memcheck.txt & \

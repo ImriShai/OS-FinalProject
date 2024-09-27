@@ -41,7 +41,7 @@ struct Triple{
 map<int, pair<Graph*, Triple*>> clients_graphs;  // dictionary to store the client file descriptor and its graph
 struct pollfd* pfds;  // set of file descriptors (global to maintain correct memory management when interrupting the server)
 int fd_count = 0;
-unique_ptr<PAO> pao = nullptr; // unique pointer to the PAO object
+PAO* pao = nullptr;
 
 /**
  * Function to handle MST request.
@@ -63,7 +63,6 @@ void handleSig(int sig) {
     cout << "\nPAO-server: cleaning up resources..." << endl;
 
     // graphs:
-
     for(auto& graph_triple : clients_graphs) {
         if(graph_triple.second.first != nullptr) {  // freeing the graph
             delete graph_triple.second.first;
@@ -76,17 +75,23 @@ void handleSig(int sig) {
     }
 
     cout << "PAO-server: Graphs freed," << endl;
-
     // Clients: cleans the pfds
-    for (int i = 0; i < fd_count; i++) {
-        if (pfds[i].fd != -1) {
+    for (int i = 0; i < fd_count; i++)
+    {
+        cout << "1 - Closing client " << pfds[i].fd << endl;
+        if (pfds[i].fd != -1)
+        {
+            cout << "2 - Closing client " << pfds[i].fd << endl;
             close(pfds[i].fd);
         }
     }
+    cout << "3 - Freeing pfds" << endl;
     free(pfds);
+    if (pao != nullptr) {
+        delete pao;  // delete the PAO object
+    }
     cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
-
-    // exit(0);
+    exit(0);
 }
 
  
@@ -128,7 +133,7 @@ int main(void) {
                             t = nullptr;}  // delete the triple
     };
 
-    pao = make_unique<PAO>(functions);  // create a new PAO object with the functions
+    pao = new PAO(functions);  // create a new PAO object with the functions
     pao->start();  // start the PAO object (start the threads). no need to stop it because it will be stopped in the destructor.
     const vector<string> graphActions = {"newgraph", "newedge", "removeedge", "mst"};
     const vector<string> mstStrats = {"prim", "kruskal", "tarjan", "boruvka"};
@@ -172,7 +177,7 @@ int main(void) {
     fd_count = 1; // For the listener
     cout << "PAO-server: waiting for connections..." << endl;
 
-    signal(SIGTERM, handleSig);  // handle the CTRL+C signal
+    signal(SIGINT, handleSig);  // handle the CTRL+C signal
 
     // Main loop
     while(true){
