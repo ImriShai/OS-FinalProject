@@ -6,6 +6,7 @@ CFLAGS = -std=c++17 -Werror -Wsign-conversion
 MEMCHECK_FLAGS = -v --leak-check=full --show-leak-kinds=all --error-exitcode=99 
 CACHEGRIND_FLAGS = -v --error-exitcode=99
 HELGRIND_FLAGS = -v --error-exitcode=99
+COVERAGE_FLAGS = --coverage
 
 # Source files
 graphSrc = $(wildcard GraphObj/*.cpp)
@@ -74,6 +75,28 @@ pao-cachegrind: pao-server
 	valgrind_pid=$$!; \
 	wait $$valgrind_pid
 
+# LF - Coverage:
+compile-lf-coverage: 
+	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) $(LF-OBJ) -o lf-server
+
+lf-coverage:
+	./lf-server
+
+lf-gcov_analysis:
+	lcov --capture --directory . --output-file Coverage-reports/lf-server_coverage.info
+	genhtml Coverage-reports/lf-server_coverage.info --output-directory Coverage-reports/1lf-server
+	gcov LF-Server.cpp GraphObj/graph.cpp MST/*.cpp DataStruct/*.cpp ServerUtils/*.cpp LFP/LFP.cpp > Coverage-reports/summary.txt
+
+#GraphObj/Graph.cpp MST/MST.cpp DataStruct/BinaryHeap.cpp ServerUtils/ServerUtils.cpp LFP/LFP.cpp
+
+# PAO - Coverage:
+pao-coverage: pao-server
+	@echo "Running pao-server for coverage..."
+	./pao-server
+	@echo "Generating coverage report for pao-server..."
+	lcov --capture --directory . --output-file Coverage-reports/pao-server_coverage.info
+	genhtml coverage/pao-server_coverage.info --output-directory coverage/pao-server
+	gcov PAO-Server.cpp PAO/PAO.cpp MST/MST.cpp DataStruct/BinaryHeap.cpp ServerUtils/ServerUtils.cpp
 # Build target
 
 lf-server: $(LF-OBJ)
@@ -84,32 +107,11 @@ pao-server: $(PAO-OBJ)
 
 # Compile source files
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -c $< -o $@
 
 # Clean build files
 clean:
 	rm -f *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
+coverageClean: 
+	rm -f *.gcno *.gcda *.gcov GraphObj/*.gcno GraphObj/*.gcda GraphObj/*.gcov MST/*.gcno MST/*.gcda MST/*.gcov DataStruct/*.gcno DataStruct/*.gcda DataStruct/*.gcov ServerUtils/*.gcno ServerUtils/*.gcda ServerUtils/*.gcov PAO/*.gcno PAO/*.gcda PAO/*.gcov LFP/*.gcno LFP/*.gcda LFP/*.gcov
 
-
-
-# Code coverage for lf-server
-coverage-lf: CFLAGS += -fprofile-arcs -ftest-coverage
-coverage-lf: LDFLAGS += -lgcov
-coverage-lf: clean lf-server
-	@echo "Running code coverage for lf-server..."
-	@./lf-server
-	@gcov $(graphSrc) $(lf-serverSrc) $(MSTSrc) $(DATASTRUCTSrc) $(UTILSrc)
-	@echo "Generating coverage report for lf-server..."
-	@gcov $(lf-serverSrc) > coverage_lf_report.txt
-	@echo "Coverage report for lf-server saved to coverage_lf_report.txt."
-
-# Code coverage for pao-server
-coverage-pao: CFLAGS += -fprofile-arcs -ftest-coverage
-coverage-pao: LDFLAGS += -lgcov
-coverage-pao: clean pao-server
-	@echo "Running code coverage for pao-server..."
-	@./pao-server
-	@gcov $(graphSrc) $(PAO) $(MSTSrc) $(DATASTRUCTSrc) $(UTILSrc)
-	@echo "Generating coverage report for pao-server..."
-	@gcov $(PAO) > coverage_pao_report.txt
-	@echo "Coverage report for pao-server saved to coverage_pao_report.txt."
