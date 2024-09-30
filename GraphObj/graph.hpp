@@ -40,6 +40,9 @@ public:
     // Constructor to create an empty graph
     Graph();
 
+
+
+
     // Constructor to create a graph from a set of vertices that may already contain edges
     Graph(std::unordered_set<Vertex> inputVxs);
 
@@ -95,7 +98,9 @@ public:
      // Get the distances between vertices in the graph and the parent matrix
     std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> floydWarshall() const;
 
-    
+    std::string longestPath() const;
+    std::string allShortestPaths() const;
+    double avgDistance() const;
 
 
 

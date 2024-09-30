@@ -69,6 +69,7 @@ void handleSig(int sig)
         if (graph.second != nullptr)
         {
             delete graph.second;
+            graph.second = nullptr;
         }
     }
 
@@ -204,6 +205,7 @@ int main(void)
                         if (clients_graphs[sender_fd] != nullptr)
                         { // if the client has a graph, delete it
                             delete clients_graphs[sender_fd];
+                            clients_graphs[sender_fd] = nullptr;
                         }
                         clients_graphs.erase(sender_fd); // remove the client from the dictionary
                     }

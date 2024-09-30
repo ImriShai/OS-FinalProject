@@ -30,6 +30,8 @@ bool Graph::isConnected() const
 // Constructor to create an empty graph
 Graph::Graph() : vertices(), edges(), distances(), parent() {}
 
+
+
 // Constructor to create a graph from a set of vertices that may already contain edges
 Graph::Graph(std::unordered_set<Vertex> inputVxs) : vertices(), edges(), distances(), parent()
 {
@@ -357,6 +359,38 @@ std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Gr
     return {dist, parent};
 }
 
+std::string Graph::longestPath() const
+{
+    if (distances.empty())
+    {
+        std::vector<std::vector<size_t>> dist = getDistances().first;
+        return longestPath(dist);
+    }
+    return longestPath(distances);
+}
+double Graph::avgDistance() const
+{
+    if (distances.empty())
+    {
+        std::vector<std::vector<size_t>> dist = getDistances().first;
+        return avgDistance(dist);
+    }
+    return avgDistance(distances);
+}
+std::string Graph::allShortestPaths() const
+{
+    // If distances are not calculated, calculate them
+    if (distances.empty())
+    {
+        // Get the distances between vertices in the graph and the parent matrix
+        std::vector<std::vector<size_t>> dist, parent;
+        std::tie(dist, parent) = floydWarshall();
+        return allShortestPaths(dist, parent);
+    }
+    return allShortestPaths(distances, parent);
+}
+
+
 std::string Graph::stats() const
 {
     std::vector<std::vector<size_t>> dist, parents;
@@ -379,12 +413,12 @@ std::string Graph::stats() const
 
 void Graph::setDistances(std::vector<std::vector<size_t>> dist)
 {
-    distances = std::vector<std::vector<size_t>>(dist);
+    distances = std::move(dist);
 }
 
 void Graph::setParent(std::vector<std::vector<size_t>> pare)
 {
-    parent = std::vector<std::vector<size_t>>(pare);
+   parent = std::move(pare);
 }
 
 void Graph::cleanDistParent()

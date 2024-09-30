@@ -68,6 +68,7 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
     if (tokens.size() > 0)
     {
         actualAction = tokens[0];
+        cout << "Action received: " << actualAction << " tokens size: " << tokens.size() << endl;
     }
     else
     {
@@ -95,24 +96,31 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
                 strat = tokens[1];
             }
         }
+        else {
+            actualAction = "message";
+        }
     }
     else if (!isNumber(tokens))
     {
         actualAction = "message";
+        cout << "Not a number" << endl;
     }
-    else if (actualAction == "newgraph" && tokens.size() == 3)
+    else if (actualAction == "newgraph")
     {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = -1;
-    }
-    else
-    {
-        actualAction = "message";
+        if (tokens.size() != 3)
+        {
+            actualAction = "message";
+        }
+        else
+        {
+            n = stoi(tokens[1]);
+            m = stoi(tokens[2]);
+            weight = -1;
+        }
     }
     else if (actualAction == "newedge")
     {
-        if (tokens.size() != 4 || isNumber(tokens) == false)
+        if (tokens.size() != 4)
         {
             actualAction = "message";
         }
@@ -123,15 +131,18 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
             weight = stoi(tokens[3]);
         }
     }
-    else if (actualAction == "removeedege" && tokens.size() == 3) // removeedge
+    else if (actualAction == "removeedge") // removeedge
     {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = -1;
-    }
-    else
-    {
-        actualAction = "message";
+        if (tokens.size() != 3)
+        {
+            actualAction = "message";
+        }
+        else
+        {
+            n = stoi(tokens[1]);
+            m = stoi(tokens[2]);
+            weight = -1;
+        }
     }
 }
 

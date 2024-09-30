@@ -49,6 +49,9 @@ PAO* pao = nullptr;
  */
 std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat)
 {
+    if(clients_graphs[clientFd].second != nullptr) {  // if the triple is not null, delete it
+        delete clients_graphs[clientFd].second;
+    }
     clients_graphs[clientFd].second = new Triple{g, strat, clientFd};  // creating a new triple on the heap := {&g, strat, clientFd}. it will be deleted in the last function
     pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
 
@@ -68,9 +71,12 @@ void handleSig(int sig) {
             delete graph_triple.second.first;
         }
         if(graph_triple.second.second != nullptr) {  // freeing the triple
-            if(graph_triple.second.second->g != nullptr)  // freeing the graph in the triple
+            if(graph_triple.second.second->g != nullptr){  // freeing the graph in the triple
                 delete graph_triple.second.second->g;
+                graph_triple.second.second->g = nullptr;
+            }
             delete graph_triple.second.second;  // freeing the triple itself
+            graph_triple.second.second = nullptr;
         }
     }
 
@@ -120,14 +126,17 @@ int main(void) {
         // fifth function calculates the shortest paths
         [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
                             t->msg += "The shortest paths are: \n" + (t->g)->allShortestPaths() + "\n"; 
-                            delete t->g;},  // delete the mst graph
+                            // delete t->g;
+                            // t->g = nullptr;
+                            },  // delete the mst graph
         
         // sixth function sends the result msg to the clientFd and deletes the triple
         [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
                             if (send(t->clientFd, t->msg.c_str(), t->msg.size(), 0) < 0)  // send the message to the client
                                 perror("send");
-                            delete t;
-                            t = nullptr;}  // delete the triple
+                            // delete t;
+                            // t = nullptr;
+                            }  // delete the triple
     };
 
     pao = new PAO(functions);  // create a new PAO object with the functions
@@ -230,6 +239,15 @@ int main(void) {
                         del_from_pfds(pfds, i, &fd_count);  // remove the connection from the set of connections
                         if (clients_graphs[sender_fd].first != nullptr){  // if the client has a graph, delete it
                             delete clients_graphs[sender_fd].first;
+                            clients_graphs[sender_fd].first = nullptr;
+                        }
+                        if (clients_graphs[sender_fd].second != nullptr){  // if the client has a triple, delete it
+                            if(clients_graphs[sender_fd].second->g != nullptr) {  // if the triple has a graph, delete it
+                                delete clients_graphs[sender_fd].second->g;
+                                clients_graphs[sender_fd].second->g = nullptr;
+                            }
+                            delete clients_graphs[sender_fd].second;
+                            clients_graphs[sender_fd].second = nullptr;
                         }
                         clients_graphs.erase(sender_fd);  // remove the client from the dictionary
                     }

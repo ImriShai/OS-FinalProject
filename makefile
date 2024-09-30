@@ -81,25 +81,31 @@ compile-lf-coverage: $(LF-OBJ)
 
 lf-gcov_analysis:
 	lcov --capture --directory . --output-file Coverage-reports/lf-server_coverage.info
+	@echo "Created info file, for furhter analysis run: make lf-htmo-cov"
+	
+lf-html-cov:
 	genhtml Coverage-reports/lf-server_coverage.info --output-directory Coverage-reports/lf-server
-#	gcov LF-Server.cpp GraphObj/*.cpp MST/*.cpp DataStruct/*.cpp ServerUtils/*.cpp LFP/LFP.cpp > Coverage-reports/summary.txt
+	@echo "Created html report, you can view it by opening Coverage-reports/lf-server/index.html"
 
+compile-pao-coverage: $(PAO-OBJ)
+	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) $(PAO-OBJ) -o pao-server
 # PAO - Coverage:
-pao-coverage: pao-server
-	@echo "Running pao-server for coverage..."
-	./pao-server
-	@echo "Generating coverage report for pao-server..."
+pao-lcov_analysis:
 	lcov --capture --directory . --output-file Coverage-reports/pao-server_coverage.info
-	genhtml coverage/pao-server_coverage.info --output-directory coverage/pao-server
-	gcov PAO-Server.cpp PAO/PAO.cpp MST/MST.cpp DataStruct/BinaryHeap.cpp ServerUtils/ServerUtils.cpp
-
+	@echo "Created info file, for furhter analysis run: make pao-htmo-cov"
+	
+pao-html-cov:
+	genhtml Coverage-reports/pao-server_coverage.info --output-directory Coverage-reports/pao-server
+	@echo "Created html report, you can view it by opening Coverage-reports/pao-server/index.html"
 # Build targets
 
+html-report: lf-html-cov pao-html-cov
+
 lf-server: $(LF-OBJ)
-	$(CC) $(CFLAGS) $(LF-OBJ)  -o lf-server
+	$(CC) $(CFLAGS) $(LF-OBJ) -o lf-server
 
 pao-server: $(PAO-OBJ)
-	$(CC) $(CFLAGS) $(PAO-OBJ)  -o pao-server
+	$(CC) $(CFLAGS) $(PAO-OBJ) -o pao-server
 
 # Compile source files
 %.o: %.cpp
@@ -107,7 +113,8 @@ pao-server: $(PAO-OBJ)
 
 # Clean build files
 clean:
-	rm -f *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
-coverageClean: 
-	rm -f -r Coverage-reports/lf-server *.gcno *.gcda *.gcov GraphObj/*.gcno GraphObj/*.gcda GraphObj/*.gcov MST/*.gcno MST/*.gcda MST/*.gcov DataStruct/*.gcno DataStruct/*.gcda DataStruct/*.gcov ServerUtils/*.gcno ServerUtils/*.gcda ServerUtils/*.gcov PAO/*.gcno PAO/*.gcda PAO/*.gcov LFP/*.gcno LFP/*.gcda LFP/*.gcov
-
+	rm -f -r *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
+clean_coverage:
+	rm -f -r Coverage-reports/lf-server *.gcno *.gcda *.gcov GraphObj/*.o GraphObj/*.gcno GraphObj/*.gcda GraphObj/*.gcov MST/*.o MST/*.gcno MST/*.gcda MST/*.gcov DataStruct/*.o DataStruct/*.gcno DataStruct/*.gcda DataStruct/*.gcov ServerUtils/*.o ServerUtils/*.gcno ServerUtils/*.gcda ServerUtils/*.gcov PAO/*.o PAO/*.gcno PAO/*.gcda PAO/*.gcov LFP/*.o LFP/*.gcno LFP/*.gcda LFP/*.gcov Coverage-reports/pao-server Coverage-reports/lf-server Coverage-reports/pao-server Coverage-reports/lf-server
+clean_all: clean clean_coverage
+	
