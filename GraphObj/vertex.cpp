@@ -10,9 +10,6 @@ Vertex::Vertex(size_t id) : id(id) {}
 size_t &Vertex::getId() { return id; }
 const size_t &Vertex::getId() const { return id; }
 
-bool &Vertex::getVisited() { return visited; }
-const bool &Vertex::getVisited() const { return visited; }
-
 // Add an edge to the vertex
 void Vertex::addEdge(Edge e)
 {
@@ -32,12 +29,6 @@ void Vertex::removeAllEdges()
 {
     edges.clear();
     adj.clear();
-}
-
-// Get the degree of the vertex (number of edges)
-int Vertex::degree() const
-{
-    return edges.size();
 }
 
 // Get an iterator for the edges connected to the vertex
@@ -88,15 +79,14 @@ bool Vertex::operator==(const Vertex &other) const
 }
 
 Vertex &Vertex::operator=(const Vertex &other)
+{
+    id = other.id;
+    for (Edge e : other.edges)
     {
-        id = other.id;
-        visited = other.visited;
-        for (Edge e : other.edges)
-        {
-            edges.push_back(e);
-        }
-        return *this;
+        edges.push_back(e);
     }
+    return *this;
+}
 
 std::ostream& operator<<(std::ostream &os, const Vertex &v)
 {

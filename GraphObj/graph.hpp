@@ -25,8 +25,6 @@ private:
     // Get the longest path in the graph given the distances
     std::string longestPath(const std::vector<std::vector<size_t>> &dist) const;
     double avgDistance(const std::vector<std::vector<size_t>> &dist) const;
-    // Get the shortest path in the graph
-    std::string shortestPath(size_t start, size_t end) const;
     // Get the shortest path in the graph given the distances
     std::string shortestPath(size_t start, size_t end, const std::vector<std::vector<size_t>> &dist, const std::vector<std::vector<size_t>> &parent) const;
     // Get the distances between vertices in the graph and the parent matrix

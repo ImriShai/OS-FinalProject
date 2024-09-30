@@ -272,20 +272,6 @@ double Graph::avgDistance(const std::vector<std::vector<size_t>> &dist) const
     return static_cast<double>(totalDist) / count;
 }
 
-std::string Graph::shortestPath(size_t start, size_t end) const
-{
-
-    if (distances.empty())
-    {
-
-        std::vector<std::vector<size_t>> dist, parent;
-        std::tie(dist, parent) = floydWarshall();
-        return shortestPath(start, end, dist, parent);
-    }
-
-    return shortestPath(start, end, distances, parent);
-}
-
 std::string Graph::shortestPath(size_t start, size_t end, const std::vector<std::vector<size_t>> &dist,const std::vector<std::vector<size_t>> &parents) const
 {
 

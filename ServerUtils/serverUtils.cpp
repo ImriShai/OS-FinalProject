@@ -11,12 +11,15 @@ std::string toLowerCase(std::string s)
 
 bool isNumber(const std::vector<std::string> &s)
 {
-    for(size_t i = 1; i < s.size(); i++){
+    for (size_t i = 1; i < s.size(); i++)
+    {
         std::string str = s[i];
-        if(str.empty()){
+        if (str.empty())
+        {
             return false;
         }
-        if(!std::all_of(str.begin(), str.end(), ::isdigit)){
+        if (!std::all_of(str.begin(), str.end(), ::isdigit))
+        {
             return false;
         }
     }
@@ -48,7 +51,8 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
     std::vector<std::string> result;
     std::string temp;
 
-    while (stream >> temp){
+    while (stream >> temp)
+    {
         result.push_back(temp);
     }
 
@@ -57,7 +61,7 @@ std::vector<std::string> splitStringBySpaces(const std::string &input)
 
 void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string &strat, std::string &action, std::string &actualAction, const std::vector<std::string> &graphActions, const std::vector<std::string> &mstStrats)
 {
-    
+
     buf[nbytes] = '\0';
     action = toLowerCase(std::string(buf));
     std::vector<std::string> tokens = splitStringBySpaces(action);
@@ -92,37 +96,44 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
             }
         }
     }
-    else if(!isNumber(tokens)){
+    else if (!isNumber(tokens))
+    {
         actualAction = "message";
     }
-    else if (actualAction == "newgraph")
+    else if (actualAction == "newgraph" && tokens.size() == 3)
     {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);
         weight = -1;
     }
+    else
+    {
+        actualAction = "message";
+    }
     else if (actualAction == "newedge")
     {
-        if(tokens.size() < 4 || isNumber(tokens) == false){
+        if (tokens.size() != 4 || isNumber(tokens) == false)
+        {
             actualAction = "message";
         }
-        else{
+        else
+        {
             n = stoi(tokens[1]);
             m = stoi(tokens[2]);
             weight = stoi(tokens[3]);
         }
     }
-    else // removeedge
+    else if (actualAction == "removeedege" && tokens.size() == 3) // removeedge
     {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);
         weight = -1;
     }
+    else
+    {
+        actualAction = "message";
     }
-
-
-
-
+}
 
 std::unordered_set<Vertex> initVertices(int n)
 {
@@ -155,7 +166,7 @@ std::pair<std::string, Graph *> newEdge(size_t n, size_t m, size_t weight, int c
     std::cout << "Adding an edge from " << n << " to " << m << std::endl;
     g->addEdge(Edge(g->getVertex(n - 1), g->getVertex(m - 1), weight)); // Add edge from u to v
     std::string msg = "Client " + std::to_string(clientFd) + " added an edge from " + std::to_string(n) + " to " + std::to_string(m) + " with weight " + std::to_string(weight) + "\n";
-    
+
     return {msg, g};
 }
 
@@ -164,23 +175,22 @@ std::pair<std::string, Graph *> removeedge(int n, int m, int clientFd, Graph *g)
     std::cout << "Removing an edge from " << n << " to " << m << std::endl;
     g->removeEdge(Edge{g->getVertex(n - 1), g->getVertex(m - 1)}); // Remove edge from u to v
     std::string msg = "Client " + std::to_string(clientFd) + " removed an edge from " + std::to_string(n) + " to " + std::to_string(m) + "\n";
-    
+
     return {msg, g};
 }
-
-
-
 
 std::pair<std::string, Graph *> handleInput(Graph *g, std::string action, int clientFd, std::string actualAction, int n, int m, int w, std::string strat)
 {
     std::string msg;
     std::vector<std::string> tokens = splitStringBySpaces(action);
-    if (tokens.size() < 1){
+    if (tokens.size() < 1)
+    {
         msg = "User " + std::to_string(clientFd) + " sent an empty message\n";
         return {msg, nullptr};
     }
 
-    if (actualAction == "newgraph"){ // format: newgraph n m
+    if (actualAction == "newgraph")
+    { // format: newgraph n m
         return newGraph(n, m, clientFd, g);
     }
     else if (actualAction == "newedge")
@@ -214,7 +224,7 @@ std::pair<std::string, Graph *> handleInput(Graph *g, std::string action, int cl
             msg = "Client " + std::to_string(clientFd) + " tried to perform the operation but there is no graph\n";
             return {msg, nullptr};
         }
-        else if(!g->isConnected())
+        else if (!g->isConnected())
         {
             msg = "Client " + std::to_string(clientFd) + " tried to perform the operation but the graph is not connected therefore it doesn't have a MST\n";
             return {msg, nullptr};
@@ -223,7 +233,6 @@ std::pair<std::string, Graph *> handleInput(Graph *g, std::string action, int cl
         {
             return MST(g, clientFd, strat);
         }
-       
     }
     else
     {

@@ -15,9 +15,6 @@ private:
     // ID of the vertex
     size_t id;
 
-    // Flag to mark the vertex as visited
-    bool visited;
-
     // List to store the edges connected to the vertex
     std::vector<Edge> edges;
 
@@ -35,9 +32,6 @@ public:
     size_t &getId();
     const size_t &getId() const;
 
-    bool &getVisited() ;
-    const bool &getVisited() const ;
-
     // Add an edge to the vertex
     void addEdge(Edge e);
 
@@ -46,9 +40,6 @@ public:
 
     //Remove all edges from the vertex
     void removeAllEdges();
-
-    // Get the degree of the vertex (number of edges)
-    int degree() const;
 
     // Get an iterator for the edges connected to the vertex
     std::vector<Edge>::iterator begin();
@@ -61,7 +52,6 @@ public:
     std::map<size_t,size_t>::iterator adjBegin();
 
     std::map<size_t,size_t>::iterator adjEnd();
-
 
     // Check if the vertex has an edge connecting to a specific target vertex
     bool hasEdge(Vertex target) const;
