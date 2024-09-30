@@ -103,11 +103,16 @@ void parseInput(char *buf, int nbytes, int &n, int &m, int &weight, std::string 
     }
     else if (actualAction == "newedge")
     {
-        n = stoi(tokens[1]);
-        m = stoi(tokens[2]);
-        weight = stoi(tokens[3]);
+        if(tokens.size() < 4 || isNumber(tokens) == false){
+            actualAction = "message";
+        }
+        else{
+            n = stoi(tokens[1]);
+            m = stoi(tokens[2]);
+            weight = stoi(tokens[3]);
+        }
     }
-    else
+    else // removeedge
     {
         n = stoi(tokens[1]);
         m = stoi(tokens[2]);

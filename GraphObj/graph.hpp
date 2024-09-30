@@ -73,9 +73,6 @@ public:
     // Get an iterator for the end of the vertices in the graph
     std::map<int, Vertex>::iterator end();
 
-    // Check if the graph is complete
-    bool isComplete() const;
-
     // Get the adjacency matrix of the graph
     std::vector<std::vector<size_t>> adjacencyMatrix() const;
 
@@ -86,23 +83,13 @@ public:
     Vertex &getVertex(int id);
     const Vertex &getVertex(int id) const;
 
-    friend std::ostream &operator<<(std::ostream &os, const Graph &g);
-
     // Get the distances between vertices in the graph and the parent matrix
     std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> getDistances() const;
 
     std::string stats() const;
 
-    // Get the Avg distance in the graph
-    double avgDistance() const;
-
-    std::string allShortestPaths() const;
-
     // Get total weight of the graph
     size_t totalWeight() const;
-
-    // Get the longest path in the graph
-    std::string longestPath() const;
     
     void setDistances(std::vector<std::vector<size_t>>);
     void setParent(std::vector<std::vector<size_t>>);

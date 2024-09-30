@@ -187,18 +187,6 @@ std::map<int, Vertex>::iterator Graph::end()
     return vertices.end();
 }
 
-// Check if the graph is complete
-bool Graph::isComplete() const
-{
-    int deg = numVertices() - 1;
-    for (const auto &pair : vertices)
-    {
-        if (pair.second.degree() != deg)
-            return false;
-    }
-    return true;
-}
-
 // Get the adjacency matrix of the graph
 std::vector<std::vector<size_t>> Graph::adjacencyMatrix() const
 {
@@ -257,16 +245,6 @@ std::string Graph::longestPath(const std::vector<std::vector<size_t>> &dist) con
     return "Longest path is from " + std::to_string(maxDistIndex) + " to " + std::to_string(maxDistIndex2) + " with a distance of " + std::to_string(maxDist);
 }
 
-std::string Graph::longestPath() const
-{
-    if (distances.empty())
-    {
-        std::vector<std::vector<size_t>> dist = getDistances().first;
-        return longestPath(dist);
-    }
-    return longestPath(distances);
-}
-
 // gets the distances between vertices in the graph and the parent matrix for undirected graph
 std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Graph::getDistances() const
 {
@@ -292,16 +270,6 @@ double Graph::avgDistance(const std::vector<std::vector<size_t>> &dist) const
     }
     count -= n; // Don't count the diagonal
     return static_cast<double>(totalDist) / count;
-}
-
-double Graph::avgDistance() const
-{
-    if (distances.empty())
-    {
-        std::vector<std::vector<size_t>> dist = getDistances().first;
-        return avgDistance(dist);
-    }
-    return avgDistance(distances);
 }
 
 std::string Graph::shortestPath(size_t start, size_t end) const
@@ -368,19 +336,6 @@ std::string Graph::allShortestPaths(const std::vector<std::vector<size_t>> &dist
     return paths;
 }
 
-std::string Graph::allShortestPaths() const
-{
-    // If distances are not calculated, calculate them
-    if (distances.empty())
-    {
-        // Get the distances between vertices in the graph and the parent matrix
-        std::vector<std::vector<size_t>> dist, parent;
-        std::tie(dist, parent) = floydWarshall();
-        return allShortestPaths(dist, parent);
-    }
-    return allShortestPaths(distances, parent);
-}
-
 std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Graph::floydWarshall() const
 {
     size_t n = numVertices();
@@ -414,21 +369,6 @@ std::pair<std::vector<std::vector<size_t>>, std::vector<std::vector<size_t>>> Gr
     }
 
     return {dist, parent};
-}
-
-// Output the graph to a stream
-std::ostream &operator<<(std::ostream &os, const Graph &g)
-{
-    std::vector<std::vector<size_t>> dist, parents;
-    // Get the distances between vertices in the graph and the parent matrix
-    std::tie(dist, parents) = g.getDistances();
-    os << "Graph with " << g.numVertices() << " vertices and " << g.edges.size() << " edges\n";
-    os << "Total weight of edges: " << g.totalWeight() << "\n";
-    os << g.longestPath(dist) << "\n";
-    os << "The average distance between vertices is: " << g.avgDistance(dist) << "\n";
-    os << "The shortest paths are: \n"
-       << g.allShortestPaths(dist, parents) << "\n";
-    return os;
 }
 
 std::string Graph::stats() const

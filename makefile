@@ -76,18 +76,13 @@ pao-cachegrind: pao-server
 	wait $$valgrind_pid
 
 # LF - Coverage:
-compile-lf-coverage: 
+compile-lf-coverage: $(LF-OBJ)
 	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) $(LF-OBJ) -o lf-server
-
-lf-coverage:
-	./lf-server
 
 lf-gcov_analysis:
 	lcov --capture --directory . --output-file Coverage-reports/lf-server_coverage.info
-	genhtml Coverage-reports/lf-server_coverage.info --output-directory Coverage-reports/1lf-server
-	gcov LF-Server.cpp GraphObj/graph.cpp MST/*.cpp DataStruct/*.cpp ServerUtils/*.cpp LFP/LFP.cpp > Coverage-reports/summary.txt
-
-#GraphObj/Graph.cpp MST/MST.cpp DataStruct/BinaryHeap.cpp ServerUtils/ServerUtils.cpp LFP/LFP.cpp
+	genhtml Coverage-reports/lf-server_coverage.info --output-directory Coverage-reports/lf-server
+#	gcov LF-Server.cpp GraphObj/*.cpp MST/*.cpp DataStruct/*.cpp ServerUtils/*.cpp LFP/LFP.cpp > Coverage-reports/summary.txt
 
 # PAO - Coverage:
 pao-coverage: pao-server
@@ -97,7 +92,8 @@ pao-coverage: pao-server
 	lcov --capture --directory . --output-file Coverage-reports/pao-server_coverage.info
 	genhtml coverage/pao-server_coverage.info --output-directory coverage/pao-server
 	gcov PAO-Server.cpp PAO/PAO.cpp MST/MST.cpp DataStruct/BinaryHeap.cpp ServerUtils/ServerUtils.cpp
-# Build target
+
+# Build targets
 
 lf-server: $(LF-OBJ)
 	$(CC) $(CFLAGS) $(LF-OBJ)  -o lf-server
@@ -113,5 +109,5 @@ pao-server: $(PAO-OBJ)
 clean:
 	rm -f *.o GraphObj/*.o MST/*.o DataStruct/*.o lf-server PAO-server PIPE/*.o LFP/*.o ServerUtils/*.o PAO/*.o pao-server 
 coverageClean: 
-	rm -f *.gcno *.gcda *.gcov GraphObj/*.gcno GraphObj/*.gcda GraphObj/*.gcov MST/*.gcno MST/*.gcda MST/*.gcov DataStruct/*.gcno DataStruct/*.gcda DataStruct/*.gcov ServerUtils/*.gcno ServerUtils/*.gcda ServerUtils/*.gcov PAO/*.gcno PAO/*.gcda PAO/*.gcov LFP/*.gcno LFP/*.gcda LFP/*.gcov
+	rm -f -r Coverage-reports/lf-server *.gcno *.gcda *.gcov GraphObj/*.gcno GraphObj/*.gcda GraphObj/*.gcov MST/*.gcno MST/*.gcda MST/*.gcov DataStruct/*.gcno DataStruct/*.gcda DataStruct/*.gcov ServerUtils/*.gcno ServerUtils/*.gcda ServerUtils/*.gcov PAO/*.gcno PAO/*.gcda PAO/*.gcov LFP/*.gcno LFP/*.gcda LFP/*.gcov
 

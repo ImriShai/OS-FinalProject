@@ -39,24 +39,19 @@ bool Edge::operator==(const Edge &other) const
     return start == other.start && end == other.end;
 }
 
- //Assignment operator
-    Edge &Edge::operator=(const Edge &other)
-    {
-        start = other.start;
-        end = other.end;
-        weight = other.weight;
-        return *this;
-    }
+//Assignment operator
+Edge &Edge::operator=(const Edge &other)
+{
+    start = other.start;
+    end = other.end;
+    weight = other.weight;
+    return *this;
+}
 
-     bool Edge::operator<(const Edge &other) const
-    {
-        return weight < other.weight;
-    }
-
-    bool Edge::operator>(const Edge &other) const
-    {
-        return weight > other.weight;
-    }
+    bool Edge::operator<(const Edge &other) const
+{
+    return weight < other.weight;
+}
 
 std::ostream& operator<<(std::ostream &os, const Edge &e)
 {
