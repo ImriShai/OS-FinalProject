@@ -27,5 +27,6 @@ newgraph something
 
 
 //stop server before socket hangout
+//connect with more than 5 for pollfd resize
 
 

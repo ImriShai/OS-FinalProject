@@ -18,6 +18,7 @@
 #include "ServerUtils/serverUtils.hpp"
 #include "PAO/PAO.hpp"
 #include <memory>
+#include <mutex>
 
 // to handle the CTRL+C signal
 #include <signal.h>
@@ -39,9 +40,11 @@ struct Triple{
 
 // global variable:
 map<int, pair<Graph*, Triple*>> clients_graphs;  // dictionary to store the client file descriptor and its graph
+map<int, mutex> clients_mtx;  // dictionary to store the client file descriptor and its mutex
 struct pollfd* pfds;  // set of file descriptors (global to maintain correct memory management when interrupting the server)
 int fd_count = 0;
 PAO* pao = nullptr;
+mutex mtx;
 
 /**
  * Function to handle MST request.
@@ -49,12 +52,29 @@ PAO* pao = nullptr;
  */
 std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& strat)
 {
-    if(clients_graphs[clientFd].second != nullptr) {  // if the triple is not null, delete it
+    Graph* tmp = nullptr;
+    Triple* t = nullptr;
+    {
+        unique_lock<mutex> lock(clients_mtx[clientFd]);
+        if(clients_graphs[clientFd].second != nullptr) {  // if the triple is not null, delete it
+        if (clients_graphs[clientFd].second->g != nullptr)
+        {
+            delete clients_graphs[clientFd].second->g;
+            clients_graphs[clientFd].second->g = nullptr;
+        }
         delete clients_graphs[clientFd].second;
     }
+    
     clients_graphs[clientFd].second = new Triple{g, strat, clientFd};  // creating a new triple on the heap := {&g, strat, clientFd}. it will be deleted in the last function
-    pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
 
+    t = clients_graphs[clientFd].second;  // get the triple
+    MST_Strategy* MST_strategy = MST_Factory::getInstance()->createMST(t->msg);  // create the MST strategy
+     tmp = (*MST_strategy)(t->g);                                         // create the MST using the strategy
+    }
+    t->g =  tmp;                                                        // create the MST using the strategy and store it in temp
+    t->msg = "MST created using " + t->msg + " strategy\n";
+
+    pao->addTask(clients_graphs[clientFd].second);  // add the triple to the PAO object (means the first function will execute its function on this triple)
     std::cout << "User " << clientFd << " requested to find MST of the Graph" << std::endl;
     return {"", nullptr};
 }
@@ -63,37 +83,46 @@ std::pair<std::string, Graph *> MST(Graph *g, int clientFd, const std::string& s
  * Handle the signal, actually stopping the server's while loop
  */
 void handleSig(int sig) {
-    cout << "\nPAO-server: cleaning up resources..." << endl;
-
-    // graphs:
-    for(auto& graph_triple : clients_graphs) {
-        if(graph_triple.second.first != nullptr) {  // freeing the graph
-            delete graph_triple.second.first;
-        }
-        if(graph_triple.second.second != nullptr) {  // freeing the triple
-            if(graph_triple.second.second->g != nullptr){  // freeing the graph in the triple
-                delete graph_triple.second.second->g;
-                graph_triple.second.second->g = nullptr;
-            }
-            delete graph_triple.second.second;  // freeing the triple itself
-            graph_triple.second.second = nullptr;
-        }
-    }
-
-    cout << "PAO-server: Graphs freed," << endl;
-    // Clients: cleans the pfds
-    for (int i = 0; i < fd_count; i++)
     {
-        if (pfds[i].fd != -1)
-        {
-            close(pfds[i].fd);
+        for(auto& mtx : clients_mtx) {
+            mtx.second.lock();
         }
+        cout << "\nPAO-server: cleaning up resources..." << endl;
+
+        // graphs:
+        for(auto& graph_triple : clients_graphs) {
+            if(graph_triple.second.first != nullptr) {  // freeing the graph
+                delete graph_triple.second.first;
+            }
+            if(graph_triple.second.second != nullptr) {  // freeing the triple
+                if(graph_triple.second.second->g != nullptr){  // freeing the graph in the triple
+                    delete graph_triple.second.second->g;
+                    graph_triple.second.second->g = nullptr;
+                }
+                delete graph_triple.second.second;  // freeing the triple itself
+                graph_triple.second.second = nullptr;
+            }
+        }
+
+        cout << "PAO-server: Graphs freed," << endl;
+        // Clients: cleans the pfds
+        for (int i = 0; i < fd_count; i++)
+        {
+            if (pfds[i].fd != -1)
+            {
+                close(pfds[i].fd);
+            }
+        }
+        free(pfds);
+        if (pao != nullptr) {
+            delete pao;  // delete the PAO object
+        }
+        cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
+        for (auto& mtx : clients_mtx) {
+            mtx.second.unlock();
+        }
+        
     }
-    free(pfds);
-    if (pao != nullptr) {
-        delete pao;  // delete the PAO object
-    }
-    cout << "PAO-server: Clients freed,\n" << "Good Bye!" << endl;
     exit(0);
 }
 
@@ -104,38 +133,36 @@ int main(void) {
     // Create a list of functions to be executed by the PAO
     std::vector<std::function<void(void*)>> functions = {
 
-        // first function calculates the MST
-        [](void* triple) { Triple* t = (Triple*)triple;   // cast the void* to Triple*
-                            MST_Strategy* MST_strategy = MST_Factory::getInstance()->createMST(t->msg);  // create the MST strategy
-                            Graph* tmp = (*MST_strategy)(t->g);                                         // create the MST using the strategy
-                            t->g =  tmp;                                                        // create the MST using the strategy and store it in temp
-                            t->msg = "MST created using " + t->msg + " strategy\n";},              // set the message of the triple to the message of the MST creation
-
         // second function calculates the total weight of the edges
-        [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
-                            t->msg += "Total weight of edges: " + std::to_string((t->g)->totalWeight()) + "\n";},
+        [](void* triple) { 
+                            Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            unique_lock<mutex> lock(clients_mtx[t->clientFd]);;  // lock the mutex
+                            t->msg += "Total weight of edges: " + std::to_string((t->g)->totalWeight()) + "\n";
+                            },
 
         // third function calculates the longest path
         [](void* triple) {Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            unique_lock<mutex> lock(clients_mtx[t->clientFd]);;  // lock the mutex
                             t->msg += (t->g)->longestPath() + "\n";},
 
         // fourth function calculates the average distance between vertices
         [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            unique_lock<mutex> lock(clients_mtx[t->clientFd]);;  // lock the mutex
                             t->msg += "The average distance between vertices is: " + std::to_string((t->g)->avgDistance()) + "\n";},
 
         // fifth function calculates the shortest paths
         [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            unique_lock<mutex> lock(clients_mtx[t->clientFd]);;  // lock the mutex
                             t->msg += "The shortest paths are: \n" + (t->g)->allShortestPaths() + "\n"; 
-                            // delete t->g;
-                            // t->g = nullptr;
+                          
                             },  // delete the mst graph
         
         // sixth function sends the result msg to the clientFd and deletes the triple
         [](void* triple) { Triple* t = (Triple*)triple;  // cast the void* to Triple*
+                            unique_lock<mutex> lock(clients_mtx[t->clientFd]);;  // lock the mutex
                             if (send(t->clientFd, t->msg.c_str(), t->msg.size(), 0) < 0)  // send the message to the client
                                 perror("send");
-                            // delete t;
-                            // t = nullptr;
+                           
                             }  // delete the triple
     };
 
@@ -237,7 +264,9 @@ int main(void) {
 
                         close(pfds[i].fd);  // close the connection 
                         del_from_pfds(pfds, i, &fd_count);  // remove the connection from the set of connections
-                        if (clients_graphs[sender_fd].first != nullptr){  // if the client has a graph, delete it
+                        {
+                            unique_lock<mutex> lock(clients_mtx[sender_fd]);;
+                            if (clients_graphs[sender_fd].first != nullptr){  // if the client has a graph, delete it
                             delete clients_graphs[sender_fd].first;
                             clients_graphs[sender_fd].first = nullptr;
                         }
@@ -246,10 +275,11 @@ int main(void) {
                                 delete clients_graphs[sender_fd].second->g;
                                 clients_graphs[sender_fd].second->g = nullptr;
                             }
-                            delete clients_graphs[sender_fd].second;
+                            delete clients_graphs[sender_fd].second;  // delete the triple
                             clients_graphs[sender_fd].second = nullptr;
                         }
                         clients_graphs.erase(sender_fd);  // remove the client from the dictionary
+                        }
                     }
                     else {  // the client sent a message
                         parseInput(buf, nbytes, n, m, weight, strat, action, actualAction, graphActions, mstStrats);

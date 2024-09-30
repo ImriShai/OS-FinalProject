@@ -1,2 +1,0 @@
-** notes for the pdf**
-1. functions that we left without coverage are relevant to a Graph object even if we didnt use them.
