@@ -2,7 +2,7 @@
 
 using namespace std;
 
-LFP::LFP(int num_threads) : stopFlag(false) {  // Constructor
+LFP::LFP(int num_threads) : stopFlag(false), leader(0){  // Constructor
     for (int i = 0; i < num_threads; ++i) {  // Create threads and add them to the vector
         threads.emplace_back(&LFP::worker, this, i);  // arguments: function, object, id
         threadIDs.push_back(i);
@@ -56,14 +56,25 @@ void LFP::worker(int id) {
                 lock_guard<mutex> stopLock(stopMutex);  // Lock the stop mutex
                 return stopFlag || !taskQueue.empty(); 
             });
+            // std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
             {
                 lock_guard<mutex> stopLock(stopMutex);  // Lock the stop mutex
                 if (stopFlag && taskQueue.empty()) return;
             }
-            task = taskQueue.front();
-            taskQueue.pop();
+            if (!taskQueue.empty() && this->leader == id) {
+                // std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
+                task = taskQueue.front();
+                taskQueue.pop();
+            } else {
+                continue;
+            }
         }
-        //std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
+        // std::cout << "Executing task from the LFP queue by thread " << id << endl << endl;
+        // locking the leader:
+        {
+            lock_guard<mutex> lock(queueMutex);
+            leader = (size_t)(leader+1) % threads.size();
+        }
         task();  // Execute the task
         
     }

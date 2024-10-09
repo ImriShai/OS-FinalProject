@@ -108,13 +108,13 @@ lf-server: $(LF-OBJ)
 pao-server: $(PAO-OBJ)
 	$(CC) $(CFLAGS) $(PAO-OBJ) -o pao-server
 
-# Compile source files with coverage flags
-%.o: %.cpp
-	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -c $< -o $@
-
-# # Compile source files without coverage flags
+# # Compile source files with coverage flags
 # %.o: %.cpp
-# 	$(CC) $(CFLAGS) -c $< -o $@
+# 	$(CC) $(CFLAGS) $(COVERAGE_FLAGS) -c $< -o $@
+
+# Compile source files without coverage flags
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
 
 # Clean build files

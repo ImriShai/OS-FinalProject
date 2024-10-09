@@ -46,6 +46,7 @@ pair<string, Graph *> MST(Graph *g, int clientFd, const string &strat) // many t
     // implementing Leader-Follower with global variable "lfp":
     lfp.addTask([clientFd, strat, mst]()
                 {
+                    // sleep(7);
                     string msg = "Client " + to_string(clientFd) + " requested to find MST of the Graph" + "\n";
                     msg += "MST Strategy: " + strat + "\n";
                     msg += "MSTs' stats: \n" + mst->stats();

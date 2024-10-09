@@ -21,11 +21,11 @@ class LFP {
         mutex stopMutex;  // Mutex to protect the stop flag
         condition_variable condition;  // used to notify the threads that there is a task in the queue
         bool stopFlag;  // Flag to stop the threads if set to true
+        int leader;  // Leader thread
     public:
         LFP(int num_threads);
         ~LFP();
         void addTask(function<void()> task);  // Add a task to the queue
-        void addPipelineTask(function<void()> task);
         void start();
         void stop();
 };
