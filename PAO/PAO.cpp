@@ -7,10 +7,10 @@
 PAO::PAO(const std::vector<std::function<void(void*)>>& functions): stopFlag(false) {
     // filling the workers vector with the struct Worker:
     for (const auto& func : functions) {
-        std::thread* trd = new std::thread();  // creating a new thread
+        // std::thread* trd = new std::thread();  // creating a new thread
         std::mutex* mtx = new std::mutex();  // creating a new mutex
         std::condition_variable* cond = new std::condition_variable();  // creating a new condition variable
-        workers.push_back({trd, func, std::queue<void*>(), mtx, cond, nullptr});
+        workers.push_back({nullptr, func, std::queue<void*>(), mtx, cond, nullptr});
     }
     // Set the nextTaskQueue pointer for each worker except the last one:
     for (size_t i = 0; i < workers.size() - 1; ++i) {
@@ -25,7 +25,7 @@ PAO::~PAO() {
     // going over all the workers and deleting the threads, mutexes and condition variables
     for (auto& worker : workers) {
         // if the thread is joinable, join it (:= wait for it to finish)
-        if (worker.thread->joinable()) {
+        if (worker.thread && worker.thread->joinable()) {
             worker.thread->join();
         }
 
@@ -54,7 +54,7 @@ void PAO::start() {
     
     for (size_t i = 0; i < workers.size(); ++i) {
         Worker* nextWorker = (i + 1 < workers.size()) ? &workers[i + 1] : nullptr;  // if the worker is not the last one, set the nextWorker to the next worker
-        *(workers[i].thread) = std::thread(&PAO::workerFunction, this, std::ref(workers[i]), nextWorker);
+        workers[i].thread = new std::thread(&PAO::workerFunction, this, std::ref(workers[i]), nextWorker);
     }
 }
 

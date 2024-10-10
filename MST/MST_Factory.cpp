@@ -38,12 +38,12 @@ void MST_Factory::cleanUp()
     std::lock_guard<std::mutex> lock(instance_mutex);
     if (instance != nullptr)
     {
-        delete instance;
-        instance = nullptr;
         for (auto &strat : strats)
         {
             delete strat.second;
             strat.second = nullptr;
         }
+        delete instance;
+        instance = nullptr;
     }
 }
